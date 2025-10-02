@@ -1,0 +1,22 @@
+font-family = "MesloLGS NF"
+theme = tron
+font-size = 10
+background-opacity = 0.9
+background-blur-radius = 20
+mouse-hide-while-typing = true
+
+
+# keybindings
+keybind = global:ctrl+s=toggle_quick_terminal
+keybind = ctrl+h=goto_split:left
+keybind = ctrl+j=goto_split:down
+keybind = ctrl+k=goto_split:up
+keybind = ctrl+l=goto_split:right
+keybind = ctrl+r=reload_config
+
+keybind = ctrl+shift+up=new_split:up
+keybind = ctrl+shift+down=new_split:down
+keybind = ctrl+shift+left=new_split:left
+keybind = ctrl+shift+right=new_split:right
+
+

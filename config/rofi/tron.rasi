@@ -1,0 +1,163 @@
+/* fr3akazo1d — Tron Rofi Theme (Wayland-friendly)
+ * Palette: bg #141d2b, cyan #00fff7, red #ff003c, panels #0f1420/#1b2433
+ */
+
+* {
+  /* Brand palette */
+  tron-bg:              #141d2b;
+  tron-panel1:          #0f1420;
+  tron-panel2:          #1b2433;
+  tron-cyan:            #00fff7;
+  tron-red:             #ff003c;
+  tron-fg:              #dce9ff;
+  tron-fg-dim:          #93a4c3;
+
+  /* Sizing */
+  radius:               6px;
+  spacing:              6px;
+
+  /* Transparency helpers */
+  transparent:          rgba(20,29,43,0.00);  /* #141d2b @ 0% */
+  semi:                 rgba(20,29,43,0.92);  /* #141d2b @ 92% */
+  panelA:               rgba(15,20,32,0.92);  /* #0f1420 @ 92% */
+  panelB:               rgba(27,36,51,0.92);  /* #1b2433 @ 92% */
+
+  /* Typography */
+  font: "JetBrainsMono Nerd Font 12, FiraCode Nerd Font 12, Hack Nerd Font 12, monospace 12";
+
+  /* Defaults */
+  background-color:     @transparent;
+  text-color:           @tron-fg;
+  foreground:           @tron-fg;
+  accent:               @tron-cyan;
+  selection:            @tron-panel2;
+}
+
+/* Window container */
+window {
+  location: center;
+  anchor:   center;
+  /* 'transparency' is Xorg-only. Wayland uses real alpha via rgba(). */
+  /* transparency: "screenshot"; */
+  padding:  0px;
+  margin:   0px;
+
+  border:        2px;
+  border-color:  @tron-cyan;
+  border-radius: @radius;
+
+  background-color: @transparent;
+  children:  [ mainbox ];
+  orientation: horizontal;
+}
+
+/* Main frame */
+mainbox {
+  spacing: 0;
+  children: [ inputbar, message, listview ];
+  background-color: @semi;
+  border-radius: @radius;
+  margin: 0px;
+  padding: 0px;
+}
+
+/* Message area (errors/help) */
+message {
+  color:            @tron-fg;
+  padding:          8px;
+  border:           0px 2px 2px 2px;
+  border-color:     @tron-cyan;
+  background-color: @panelA;
+}
+
+/* Search bar */
+inputbar {
+  color:            @tron-fg;
+  padding:          12px;
+  background-color: @panelA;
+  border-radius:    6px 6px 0px 0px;
+  border:           0px 0px 2px 0px;
+  border-color:     @tron-cyan;
+}
+
+/* Prompt, entry, case indicator */
+prompt, entry, case-indicator {
+  text-color: @tron-fg;
+}
+
+prompt {
+  margin: 0px 10px 0px 0px;
+  text-color: @tron-cyan; /* cyan prompt cue */
+}
+
+/* The list of results */
+listview {
+  padding: 8px;
+  border-radius: 0px 0px 6px 6px;
+  border: 0px;
+  background-color: @semi;
+  dynamic: false;
+  lines: 12;
+}
+
+/* Row style */
+element {
+  padding: 8px;
+  vertical-align: 0.5;
+  border-radius: 4px;
+  background-color: transparent;
+  color: @tron-fg-dim;
+  text-color: @tron-fg-dim;
+  margin: 0px;
+}
+
+/* Selected row — Tron accent */
+element selected.normal {
+  background-color: @selection;
+  border: 0px 0px 0px 3px;
+  border-color: @tron-cyan;
+  text-color: @tron-fg;  /* full brightness on selection */
+}
+
+/* Text / icon */
+element-text, element-icon {
+  background-color: inherit;
+  text-color: inherit;
+  horizontal-align: 0;
+}
+
+element-icon {
+  size: 22px;
+  padding: 0px 8px 0px 0px;
+}
+
+/* Buttons (e.g., modi-switcher rows) */
+button {
+  padding: 8px;
+  color: @tron-fg;
+  horizontal-align: 0.5;
+  border: 2px 0px 2px 2px;
+  border-radius: 4px;
+  border-color: @tron-panel2;
+  background-color: @panelA;
+}
+
+button selected.normal {
+  border-color: @tron-cyan;
+  background-color: @selection;
+}
+
+/* Text boxes (ssh/password prompt, etc.) */
+textbox {
+  padding: 8px;
+  border-radius: @radius;
+  border-color: @tron-cyan;
+  border: 1px;
+  background-color: @panelA;
+  text-color: @tron-fg;
+}
+
+/* Optional: highlight matches inside rows (if enabled) */
+element-text {
+  highlight: @tron-cyan;
+}

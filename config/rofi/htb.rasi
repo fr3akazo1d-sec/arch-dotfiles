@@ -1,0 +1,156 @@
+/*
+ * Hack The Box Hacker Theme
+ * Inspired by classic hacker aesthetics
+ */
+
+* {
+    /* Hacker colors */
+    htb-dark: #0A0F0D;         // Deep black background
+    htb-black: #000000;        // Pure black accents
+    htb-green: #39FF14;        // Neon green
+    htb-blue: #00FFF7;         // Neon blue
+    htb-purple: #8F00FF;       // Neon purple
+    htb-gray: #222222;         // Subtle gray
+    
+    /* Background shades */
+    htb-bg1: #10181A;          // Slightly lighter black
+    htb-bg2: #1A2327;          // Selection backgrounds
+    
+    /* Element colors */
+    background-color: @htb-dark;
+    text-color: @htb-green;
+    foreground: @htb-green;
+    accent: @htb-blue;
+    highlight: @htb-purple;
+    selection: @htb-bg2;
+    font: "Fira Mono, Hack, monospace 12";
+    
+    /* Transparency */
+    transparent: rgba(10,15,13,0);
+    semi-transparent: rgba(10,15,13,0.92);
+}
+
+window {
+    location: center;
+    anchor: center;
+    transparency: "screenshot";
+    padding: 0px;
+    border: 2px;
+    border-color: @htb-green;
+    border-radius: 6px;
+    background-color: @transparent;
+    spacing: 0;
+    children: [mainbox];
+    orientation: horizontal;
+    font: inherit;
+    margin: 0px;
+}
+
+mainbox {
+    spacing: 0;
+    children: [inputbar, message, listview];
+    background-color: @semi-transparent;
+    border-radius: 6px;
+    font: inherit;
+    margin: 0px;
+    padding: 0px;
+}
+
+message {
+    color: @htb-green;
+    padding: 8px;
+    border: 0px 2px 2px 2px;
+    border-color: @accent;
+    background-color: @htb-bg1;
+    font: inherit;
+}
+
+inputbar {
+    color: @htb-green;
+    padding: 14px;
+    background-color: @htb-bg1;
+    border-radius: 6px 6px 0px 0px;
+    border: 0px 0px 2px 0px;
+    border-color: @htb-green;
+    font: inherit;
+}
+
+entry, prompt, case-indicator {
+    text-font: inherit;
+    text-color: @htb-green;
+    font: inherit;
+}
+
+prompt {
+    margin: 0px 12px 0px 0px;
+    text-color: @htb-green;
+    font: inherit;
+}
+
+listview {
+    padding: 8px;
+    border-radius: 0px 0px 6px 6px;
+    border: 0px;
+    background-color: @semi-transparent;
+    dynamic: false;
+    lines: 12;
+    font: inherit;
+}
+
+element {
+    padding: 8px;
+    vertical-align: 0.5;
+    border-radius: 4px;
+    background-color: transparent;
+    color: @htb-green;
+    text-color: @htb-green;
+    margin: 0px;
+    font: inherit;
+}
+
+element selected.normal {
+    background-color: @htb-bg2;
+    border: 0px 0px 0px 3px;
+    border-color: @htb-green;
+    text-color: @htb-green;
+    font: inherit;
+}
+
+element-text, element-icon {
+    background-color: inherit;
+    text-color: inherit;
+    horizontal-align: 0;
+    font: inherit;
+}
+
+element-icon {
+    size: 24px;
+    padding: 0px 10px 0px 0px;
+    font: inherit;
+}
+
+button {
+    padding: 10px;
+    color: @htb-green;
+    horizontal-align: 0.5;
+    border: 2px 0px 2px 2px;
+    border-radius: 4px;
+    border-color: @htb-gray;
+    font: inherit;
+}
+
+button selected normal {
+    border-color: @htb-green;
+    background-color: @htb-bg2;
+    font: inherit;
+}
+
+textbox {
+    padding: 8px;
+    border-radius: 6px;
+    border-color: @htb-blue;
+    border: 1px;
+    background-color: @htb-bg1;
+    text-color: @htb-green;
+    font: inherit;
+}
