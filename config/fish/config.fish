@@ -98,15 +98,285 @@ status is-interactive; and begin
     end
 
     function fish_greeting
-        set_color red --bold
-        echo -n "h3ll0 "
-        set_color cyan --bold
-        echo -n "Fr13nd! "
-        set_color green --bold
-        echo -n "Hack the planet "
-        set_color yellow --bold
-        echo "🌍"
-        set_color normal
+        # Enhanced Cybersecurity Greeting with System Info & Red Team Infrastructure Check
+        
+        # Colors
+        set RED (set_color red --bold)
+        set GREEN (set_color green --bold)
+        set YELLOW (set_color yellow --bold)
+        set BLUE (set_color blue --bold)
+        set CYAN (set_color cyan --bold)
+        set MAGENTA (set_color magenta --bold)
+        set WHITE (set_color white --bold)
+        set NORMAL (set_color normal)
+        
+        # Main Greeting Banner
+        echo ""
+        echo "$RED┌─────────────────────────────────────────────────────────────────────┐$NORMAL"
+        echo "$RED│  $CYAN🔴 $WHITE H4CK3R T3RM1N4L $CYAN🔴 $WHITE- $GREEN Fr3akazo1d-sec $WHITE Workstation    $RED│$NORMAL"  
+        echo "$RED└─────────────────────────────────────────────────────────────────────┘$NORMAL"
+        
+        # System Information
+        set host_name (hostname)
+        set kernel (uname -r)
+        set uptime_raw (uptime | sed 's/.*up \([^,]*\).*/\1/' 2>/dev/null || echo "Unknown")
+        set distro (cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d'"' -f2 || echo "Unknown Linux")
+        
+        # CPU & Memory
+        set cpu_cores (nproc 2>/dev/null || echo "Unknown")
+        set memory_info (free -h 2>/dev/null | awk '/^Mem:/ {print $3 "/" $2 " (" int($3/$2*100) "%)"}' || echo "N/A")
+        set load_avg (cat /proc/loadavg 2>/dev/null | cut -d' ' -f1-3 || echo "N/A")
+        
+        # Network & Security Info  
+        set primary_interface (ip route 2>/dev/null | grep default | awk '{print $5}' | head -1 || echo "N/A")
+        set local_ip (ip addr show $primary_interface 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1 || echo "N/A")
+        set public_ip (curl -s --connect-timeout 3 ifconfig.me 2>/dev/null || echo "Offline")
+        
+        # Red Team Infrastructure Checks
+        echo ""
+        echo "$YELLOW┌─ 🖥️  SYSTEM STATUS ─────────────────────────────────────────────────┐$NORMAL"
+        echo "$YELLOW│$NORMAL $CYAN Host:$NORMAL $WHITE$host_name$NORMAL | $CYAN Kernel:$NORMAL $WHITE$kernel$NORMAL"
+        echo "$YELLOW│$NORMAL $CYAN OS:$NORMAL $WHITE$distro$NORMAL"
+        echo "$YELLOW│$NORMAL $CYAN Uptime:$NORMAL $WHITE$uptime_raw$NORMAL | $CYAN Load:$NORMAL $WHITE$load_avg$NORMAL"
+        echo "$YELLOW│$NORMAL $CYAN CPU Cores:$NORMAL $WHITE$cpu_cores$NORMAL | $CYAN Memory:$NORMAL $WHITE$memory_info$NORMAL"
+        echo "$YELLOW└─────────────────────────────────────────────────────────────────────┘$NORMAL"
+        
+        echo ""
+        echo "$BLUE┌─ 🌐 NETWORK & CONNECTIVITY ────────────────────────────────────────────┐$NORMAL"
+        echo "$BLUE│$NORMAL $CYAN Interface:$NORMAL $WHITE$primary_interface$NORMAL | $CYAN Local IP:$NORMAL $WHITE$local_ip$NORMAL"
+        
+        # Public IP with status indicator
+        if test "$public_ip" != "Offline"
+            echo "$BLUE│$NORMAL $CYAN Public IP:$NORMAL $GREEN$public_ip$NORMAL ✅"
+        else
+            echo "$BLUE│$NORMAL $CYAN Public IP:$NORMAL $RED$public_ip$NORMAL ❌"
+        end
+        
+        # Red Team Infrastructure Checks
+        echo "$BLUE│$NORMAL"
+        echo "$BLUE│$NORMAL $MAGENTA🔴 RED TEAM INFRASTRUCTURE STATUS:$NORMAL"
+        
+        # Check VPN Connection (common VPN interfaces)
+        set vpn_status "❌ Disconnected"
+        set vpn_color $RED
+        if ip addr show tun0 >/dev/null 2>&1; or ip addr show vpn >/dev/null 2>&1; or ip addr show wg0 >/dev/null 2>&1
+            set vpn_status "✅ Connected"
+            set vpn_color $GREEN
+            set vpn_ip (ip addr show tun0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1; or ip addr show wg0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1; or echo "VPN Active")
+            echo "$BLUE│$NORMAL   $CYAN VPN:$NORMAL $vpn_color$vpn_status$NORMAL ($WHITE$vpn_ip$NORMAL)"
+        else
+            echo "$BLUE│$NORMAL   $CYAN VPN:$NORMAL $vpn_color$vpn_status$NORMAL"
+        end
+        
+        # Check Tor Service  
+        if systemctl is-active tor >/dev/null 2>&1
+            echo "$BLUE│$NORMAL   $CYAN Tor:$NORMAL $GREEN✅ Running$NORMAL"
+        else
+            echo "$BLUE│$NORMAL   $CYAN Tor:$NORMAL $RED❌ Stopped$NORMAL"
+        end
+        
+        # Check SSH Agent
+        if test -n "$SSH_AUTH_SOCK"; and ssh-add -l >/dev/null 2>&1
+            set key_count (ssh-add -l 2>/dev/null | wc -l)
+            echo "$BLUE│$NORMAL   $CYAN SSH Agent:$NORMAL $GREEN✅ Active$NORMAL ($WHITE$key_count keys$NORMAL)"
+        else
+            echo "$BLUE│$NORMAL   $CYAN SSH Agent:$NORMAL $RED❌ No keys loaded$NORMAL"
+        end
+        
+        # Check if connected to known Red Team networks (customize these)
+        set red_team_networks "10.10.10.0/24" "192.168.1.0/24" "172.16.0.0/16"
+        set in_red_team_net $RED"❌ External Network"$NORMAL
+        
+        for network in $red_team_networks
+            if ip route get (echo $network | cut -d/ -f1) 2>/dev/null | grep -q "via"
+                set in_red_team_net $GREEN"✅ Red Team Network Detected"$NORMAL  
+                break
+            end
+        end
+        echo "$BLUE│$NORMAL   $CYAN Network Zone:$NORMAL $in_red_team_net"
+        
+        echo "$BLUE└─────────────────────────────────────────────────────────────────────┘$NORMAL"
+        
+        # Cyber-Sec Tools Status
+        echo ""
+        echo "$MAGENTA┌─ ⚔️  CYBERSEC ARSENAL ─────────────────────────────────────────────────┐$NORMAL"
+        
+        # Check for important tools
+        set tools nmap nikto burpsuite metasploit-framework john hashcat aircrack-ng wireshark
+        set tools_status ""
+        
+        for tool in $tools
+            if command -v $tool >/dev/null 2>&1
+                set tools_status "$tools_status$GREEN$tool$NORMAL "
+            else
+                set tools_status "$tools_status$RED$tool$NORMAL "
+            end
+        end
+        
+        echo "$MAGENTA│$NORMAL $CYAN Tools:$NORMAL $tools_status"
+        
+        # Check Cyber-Sec directories
+        if test -d /opt/Cyber-Sec
+            set cybersec_dirs (ls /opt/Cyber-Sec 2>/dev/null | wc -l)
+            echo "$MAGENTA│$NORMAL $CYAN Cyber-Sec Dirs:$NORMAL $GREEN✅ Active$NORMAL ($WHITE$cybersec_dirs directories$NORMAL)"
+        else
+            echo "$MAGENTA│$NORMAL $CYAN Cyber-Sec Dirs:$NORMAL $RED❌ Not Found$NORMAL"
+        end
+        
+        echo "$MAGENTA└─────────────────────────────────────────────────────────────────────┘$NORMAL"
+        
+        # Final Status & Time
+        set current_time (date "+%H:%M:%S")
+        set current_date (date "+%A, %B %d, %Y")
+        
+        echo ""
+        echo "$WHITE┌─────────────────────────────────────────────────────────────────────┐$NORMAL"
+        echo "$WHITE│$NORMAL $YELLOW⚡$NORMAL $CYAN$current_date$NORMAL | $CYAN$current_time$NORMAL"
+        echo "$WHITE│$NORMAL $GREEN🚀 Ready for Red Team Operations$NORMAL | $MAGENTA👾 h3ll0 Fr13nd!$NORMAL"
+        echo "$WHITE└─────────────────────────────────────────────────────────────────────┘$NORMAL"
+        echo ""
+    end
+
+    # Quick Red Team Infrastructure Status Check
+    function redteam-status
+        set RED (set_color red --bold)
+        set GREEN (set_color green --bold)
+        set CYAN (set_color cyan --bold)
+        set WHITE (set_color white --bold)
+        set NORMAL (set_color normal)
+        
+        echo ""
+        echo "$RED🔴 RED TEAM INFRASTRUCTURE STATUS$NORMAL"
+        echo "$RED─────────────────────────────────────$NORMAL"
+        
+        # VPN Check
+        if ip addr show tun0 >/dev/null 2>&1; or ip addr show wg0 >/dev/null 2>&1
+            set vpn_ip (ip addr show tun0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1; or ip addr show wg0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+            echo "$CYAN VPN:$NORMAL $GREEN✅ Connected$NORMAL ($WHITE$vpn_ip$NORMAL)"
+        else
+            echo "$CYAN VPN:$NORMAL $RED❌ Disconnected$NORMAL"
+        end
+        
+        # Tor Check
+        if systemctl is-active tor >/dev/null 2>&1
+            echo "$CYAN Tor:$NORMAL $GREEN✅ Running$NORMAL"
+        else
+            echo "$CYAN Tor:$NORMAL $RED❌ Stopped$NORMAL"
+        end
+        
+        # SSH Agent Check
+        if test -n "$SSH_AUTH_SOCK"; and ssh-add -l >/dev/null 2>&1
+            set key_count (ssh-add -l 2>/dev/null | wc -l)
+            echo "$CYAN SSH:$NORMAL $GREEN✅ $key_count keys loaded$NORMAL"
+        else
+            echo "$CYAN SSH:$NORMAL $RED❌ No keys$NORMAL"
+        end
+        
+        # Public IP
+        set public_ip (curl -s --connect-timeout 2 ifconfig.me 2>/dev/null || echo "Offline")
+        if test "$public_ip" != "Offline"
+            echo "$CYAN IP:$NORMAL $GREEN$public_ip$NORMAL"
+        else
+            echo "$CYAN IP:$NORMAL $RED$public_ip$NORMAL"
+        end
+        echo ""
+    end
+
+    # Quick System Status
+    function sys-status
+        set BLUE (set_color blue --bold)
+        set CYAN (set_color cyan --bold)
+        set WHITE (set_color white --bold)
+        set NORMAL (set_color normal)
+        
+        echo ""
+        echo "$BLUE💻 SYSTEM STATUS$NORMAL"
+        echo "$BLUE─────────────────$NORMAL"
+        
+        set host_name (hostname)
+        set uptime_raw (uptime | sed 's/.*up \([^,]*\).*/\1/' 2>/dev/null || echo "Unknown")
+        set memory_info (free -h 2>/dev/null | awk '/^Mem:/ {print $3 "/" $2 " (" int($3/$2*100) "%)"}' || echo "N/A")
+        set disk_usage (df -h / | awk 'NR==2 {print $3 "/" $2 " (" $5 ")"}')
+        set load_avg (cat /proc/loadavg | cut -d' ' -f1-3)
+        
+        echo "$CYAN Host:$NORMAL $WHITE$host_name$NORMAL"
+        echo "$CYAN Uptime:$NORMAL $WHITE$uptime_raw$NORMAL"
+        echo "$CYAN Memory:$NORMAL $WHITE$memory_info$NORMAL"
+        echo "$CYAN Disk:$NORMAL $WHITE$disk_usage$NORMAL"
+        echo "$CYAN Load:$NORMAL $WHITE$load_avg$NORMAL"
+        echo ""
+    end
+
+    # Network Reconnaissance Quick Check
+    function net-recon
+        set GREEN (set_color green --bold)
+        set YELLOW (set_color yellow --bold)
+        set CYAN (set_color cyan --bold)
+        set WHITE (set_color white --bold)
+        set NORMAL (set_color normal)
+        
+        echo ""
+        echo "$GREEN🌐 NETWORK RECONNAISSANCE$NORMAL"
+        echo "$GREEN─────────────────────────$NORMAL"
+        
+        set interface (ip route | grep default | awk '{print $5}' | head -1)
+        set local_ip (ip addr show $interface 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+        set gateway (ip route | grep default | awk '{print $3}' | head -1)
+        set network (echo $local_ip | cut -d. -f1-3).0
+        
+        echo "$CYAN Interface:$NORMAL $WHITE$interface$NORMAL"
+        echo "$CYAN Local IP:$NORMAL $WHITE$local_ip$NORMAL"
+        echo "$CYAN Gateway:$NORMAL $WHITE$gateway$NORMAL"
+        echo "$CYAN Network:$NORMAL $WHITE$network/24$NORMAL"
+        
+        # Quick ping test to gateway
+        if ping -c 1 -W 1 $gateway >/dev/null 2>&1
+            echo "$CYAN Gateway:$NORMAL $GREEN✅ Reachable$NORMAL"
+        else
+            echo "$CYAN Gateway:$NORMAL $YELLOW⚠️  Unreachable$NORMAL"
+        end
+        
+        # DNS Test
+        if nslookup google.com >/dev/null 2>&1
+            echo "$CYAN DNS:$NORMAL $GREEN✅ Working$NORMAL"
+        else
+            echo "$CYAN DNS:$NORMAL $YELLOW⚠️  Issues$NORMAL"
+        end
+        echo ""
+    end
+
+    # Cybersec Tools Check
+    function tools-check
+        set MAGENTA (set_color magenta --bold)
+        set GREEN (set_color green --bold)
+        set RED (set_color red --bold)
+        set CYAN (set_color cyan --bold)
+        set NORMAL (set_color normal)
+        
+        echo ""
+        echo "$MAGENTA⚔️  CYBERSEC ARSENAL STATUS$NORMAL"
+        echo "$MAGENTA─────────────────────────────$NORMAL"
+        
+        set essential_tools nmap nikto burpsuite metasploit john hashcat aircrack-ng wireshark sqlmap gobuster ffuf
+        
+        for tool in $essential_tools
+            if command -v $tool >/dev/null 2>&1
+                echo "$CYAN$tool:$NORMAL $GREEN✅ Installed$NORMAL"
+            else
+                echo "$CYAN$tool:$NORMAL $RED❌ Missing$NORMAL"
+            end
+        end
+        
+        # Check Cyber-Sec directories
+        if test -d /opt/Cyber-Sec
+            echo ""
+            echo "$CYAN Cyber-Sec Dirs:$NORMAL $GREEN✅ Available$NORMAL"
+            ls -la /opt/Cyber-Sec/ 2>/dev/null | grep "^d" | awk '{print "  - " $9}'
+        else
+            echo ""
+            echo "$CYAN Cyber-Sec Dirs:$NORMAL $RED❌ Not Found$NORMAL"
+        end
+        echo ""
     end
 
     # System aliases
@@ -120,6 +390,13 @@ status is-interactive; and begin
     alias ports='netstat -tulanp tcp'
     alias scan='nmap -A -T4'
     alias sniff='sudo tcpdump -i any'
+    
+    # Red Team Infrastructure aliases
+    alias rt='redteam-status'
+    alias sys='sys-status'
+    alias net='net-recon'
+    alias tools='tools-check'
+    alias fullstatus='redteam-status && sys-status'
     alias hx='hexdump -C'
     alias conns='lsof -i -n -P'
     alias serve='python3 -m http.server 8080'
