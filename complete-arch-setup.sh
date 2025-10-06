@@ -263,8 +263,11 @@ install_dotfiles() {
     info "Installing Ghostty configuration..."
     cp -r config/ghostty/* ~/.config/ghostty/ 2>/dev/null || true
     
-    info "Installing Starship configuration..."
-    cp config/starship.toml ~/.config/ 2>/dev/null || true
+    # Starship configuration (if exists)
+    if [[ -f config/starship.toml ]]; then
+        info "Installing Starship configuration..."
+        cp config/starship.toml ~/.config/
+    fi
     
     # Copy wallpapers
     info "Installing wallpapers..."
@@ -419,7 +422,15 @@ cp -r config/rofi/* ~/.config/rofi/
 cp -r config/swaync/* ~/.config/swaync/
 cp -r config/fish/* ~/.config/fish/
 cp -r config/ghostty/* ~/.config/ghostty/
-cp config/starship.toml ~/.config/
+# Copy starship config if it exists
+if [[ -f config/starship.toml ]]; then
+    cp config/starship.toml ~/.config/
+fi
+# Copy home-manager config
+if [[ -f config/home-manager/home.nix ]]; then
+    mkdir -p ~/.config/home-manager
+    cp config/home-manager/home.nix ~/.config/home-manager/
+fi
 echo "✅ Dotfiles updated!"
 echo "🔄 Restart Hyprland or reload configurations to apply changes"
 EOF
