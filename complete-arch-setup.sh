@@ -52,6 +52,22 @@ check_root() {
     fi
 }
 
+check_distro() {
+    if [[ ! -f /etc/arch-release ]]; then
+        error "This script is designed specifically for Arch Linux! 
+        
+Current system detected: $(lsb_release -d 2>/dev/null | cut -f2 || echo "Unknown Linux")
+
+For other distributions, you'll need to:
+1. Replace 'pacman' with your package manager (apt/dnf/zypper)
+2. Map package names to your distro's repositories
+3. Handle AUR packages differently (compile from source)
+4. Adjust paths and service configurations
+
+Consider creating a distro-specific version of this script."
+    fi
+}
+
 # Update system and install base packages
 install_base_packages() {
     step "Updating system and installing base packages"
@@ -158,14 +174,29 @@ install_base_packages() {
 install_aur_packages() {
     step "Installing AUR helper and AUR packages"
     
-    # Install yay if not present
-    if ! command -v yay &> /dev/null; then
-        info "Installing yay AUR helper..."
+    # Install AUR helper (paru preferred, yay fallback)
+    if ! command -v paru &> /dev/null && ! command -v yay &> /dev/null; then
+        info "Installing yay AUR helper first..."
         cd /tmp
         git clone https://aur.archlinux.org/yay.git
         cd yay
         makepkg -si --noconfirm
         cd ~
+    fi
+    
+    # Install paru if not present (preferred AUR helper)
+    if ! command -v paru &> /dev/null; then
+        if command -v yay &> /dev/null; then
+            info "Installing paru AUR helper using yay..."
+            yay -S --noconfirm paru
+        else
+            info "Installing paru AUR helper from source..."
+            cd /tmp
+            git clone https://aur.archlinux.org/paru.git
+            cd paru
+            makepkg -si --noconfirm
+            cd ~
+        fi
     fi
     
     # AUR packages
@@ -179,12 +210,12 @@ install_aur_packages() {
         "visual-studio-code-bin"
         "discord"
         "spotify"
-        "brave-bin"
+        "vivaldi"
     )
     
     for package in "${aur_packages[@]}"; do
         info "Installing $package from AUR..."
-        yay -S --noconfirm "$package" || warn "Failed to install $package from AUR"
+        paru -S --noconfirm "$package" || warn "Failed to install $package from AUR"
     done
     
     log "AUR packages installed"
@@ -438,7 +469,7 @@ EOF
     
     # Clean package cache
     sudo pacman -Sc --noconfirm
-    yay -Sc --noconfirm
+    paru -Sc --noconfirm
     
     log "Final setup completed"
 }
@@ -506,6 +537,7 @@ main() {
     fi
     
     check_root
+    check_distro
     install_base_packages
     install_aur_packages
     clone_dotfiles
