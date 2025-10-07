@@ -179,10 +179,22 @@ install_base_packages() {
         "noto-fonts"
         "noto-fonts-emoji"
         
+        # Graphics and OpenGL support
+        "mesa"
+        "mesa-utils"
+        "vulkan-tools"
+        "libgl"
+        "lib32-mesa"
+        "xf86-video-intel"
+        "xf86-video-amdgpu"
+        "xf86-video-nouveau"
+        
         # Terminal and shell
         "fish"
         "starship"
         "neovim"
+        "kitty"
+        "alacritty"
         
         # File management
         "thunar"

@@ -1,18 +1,20 @@
-# Renderer configuration for compatibility
-renderer = auto
-opengl-debug = false
-opengl-legacy = true
+# Ghostty fallback configuration for systems with OpenGL issues
+# Use this if the main config fails with "unable to acquire opengl context"
+
+# Force software rendering (slower but more compatible)
+renderer = software
 
 # Font and appearance
 font-family = "MesloLGS NF"
 theme = tron
 font-size = 10
 background-opacity = 0.9
-background-blur-radius = 20
 mouse-hide-while-typing = true
 
+# Disable features that require hardware acceleration
+background-blur-radius = 0
 
-# keybindings
+# Keybindings (same as main config)
 keybind = global:ctrl+s=toggle_quick_terminal
 keybind = ctrl+h=goto_split:left
 keybind = ctrl+j=goto_split:down
@@ -24,5 +26,3 @@ keybind = ctrl+shift+up=new_split:up
 keybind = ctrl+shift+down=new_split:down
 keybind = ctrl+shift+left=new_split:left
 keybind = ctrl+shift+right=new_split:right
-
-
