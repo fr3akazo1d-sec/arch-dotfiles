@@ -98,6 +98,40 @@ setup_chaotic_aur() {
     log "Chaotic-AUR repository configured successfully"
 }
 
+# Setup Athena OS repository for cybersecurity tools
+setup_athena_repo() {
+    step "Setting up Athena OS repository for enhanced cybersecurity tools"
+    
+    # Check if Athena repository is already configured
+    if grep -q "\[athena\]" /etc/pacman.conf; then
+        info "Athena OS repository already configured"
+        return 0
+    fi
+    
+    info "Adding Athena OS repository and key..."
+    
+    # Download mirrorlist
+    sudo curl -s https://raw.githubusercontent.com/Athena-OS/athena/main/packages/os-specific/system/athena-mirrorlist/athena-mirrorlist -o /etc/pacman.d/athena-mirrorlist || warn "Failed to download Athena mirrorlist"
+    
+    # Add Athena key (try multiple keyservers for reliability)
+    if ! sudo pacman-key --recv-keys A3F78B994C2171D5 --keyserver keys.openpgp.org; then
+        warn "Primary keyserver failed, trying alternative..."
+        sudo pacman-key --recv-keys A3F78B994C2171D5 --keyserver keyserver.ubuntu.com || warn "Failed to receive Athena key"
+    fi
+    
+    # Trust the key
+    sudo pacman-key --lsign A3F78B994C2171D5 || warn "Failed to sign Athena key"
+    
+    # Add repository to pacman.conf
+    info "Adding Athena OS repository to pacman.conf..."
+    echo "" | sudo tee -a /etc/pacman.conf
+    echo "[athena]" | sudo tee -a /etc/pacman.conf
+    echo "SigLevel = Optional TrustedOnly" | sudo tee -a /etc/pacman.conf
+    echo "Include = /etc/pacman.d/athena-mirrorlist" | sudo tee -a /etc/pacman.conf
+    
+    log "Athena OS repository configured successfully"
+}
+
 # Update system and install base packages
 install_base_packages() {
     step "Updating system and installing base packages"
@@ -199,6 +233,39 @@ install_base_packages() {
     done
     
     log "Base packages installed successfully"
+}
+
+# Install enhanced cybersecurity tools from Athena repository
+install_athena_tools() {
+    step "Installing enhanced cybersecurity tools from Athena OS repository"
+    
+    # Popular Athena OS cybersecurity tools
+    local athena_tools=(
+        "metasploit"
+        "john"
+        "hashcat"
+        "aircrack-ng"
+        "nikto"
+        "sqlmap"
+        "gobuster"
+        "ffuf"
+        "wordlists"
+        "seclists"
+        "payloadsallthethings"
+        "exploitdb"
+        "sherlock-project"
+        "social-engineer-toolkit"
+    )
+    
+    info "Attempting to install enhanced cybersecurity tools from Athena repository..."
+    
+    for tool in "${athena_tools[@]}"; do
+        info "Installing $tool..."
+        # Try to install from Athena repository, continue if not available
+        sudo pacman -S --noconfirm "$tool" 2>/dev/null || info "$tool not available in Athena repo, skipping..."
+    done
+    
+    log "Athena cybersecurity tools installation completed"
 }
 
 # Install AUR helper and AUR packages
@@ -525,9 +592,9 @@ print_completion() {
     echo -e "  ${HYPR} Hyprland with complete Wayland setup"
     echo -e "  ${DESKTOP} Waybar, Rofi, SwayNC, Ghostty terminal"
     echo -e "  ${FISH} Fish shell with 90+ cybersecurity functions"
-    echo -e "  ${SHIELD} Complete cybersecurity toolkit"
+    echo -e "  ${SHIELD} Complete cybersecurity toolkit with Athena OS tools"
     echo -e "  ${GEAR} Nix package manager with Home Manager"
-    echo -e "  ${ROCKET} Chaotic-AUR repository for faster AUR packages"
+    echo -e "  ${ROCKET} Chaotic-AUR + Athena OS repositories for enhanced packages"
     
     echo -e "\n${YELLOW}Next steps:${NC}"
     echo -e "  1. ${BLUE}Reboot your system${NC}"
@@ -624,7 +691,9 @@ main() {
     check_root
     check_distro
     setup_chaotic_aur
+    setup_athena_repo
     install_base_packages
+    install_athena_tools
     install_aur_packages
     clone_dotfiles
     backup_configs
