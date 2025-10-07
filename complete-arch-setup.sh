@@ -189,6 +189,16 @@ install_base_packages() {
         "xf86-video-amdgpu"
         "xf86-video-nouveau"
         
+        # GTK themes and appearance
+        "gtk2"
+        "gtk3"
+        "gtk4"
+        "materia-gtk-theme"
+        "papirus-icon-theme"
+        "bibata-cursor-theme"
+        "nwg-look"
+        "lxappearance"
+        
         # Terminal and shell
         "fish"
         "starship"
@@ -321,6 +331,8 @@ install_aur_packages() {
         "discord"
         "spotify"
         "vivaldi"
+        "bibata-cursor-theme-bin"  # Enhanced cursor theme
+        "qt5ct"                    # Qt5 configuration tool
     )
     
     for package in "${aur_packages[@]}"; do
@@ -430,6 +442,45 @@ install_dotfiles() {
     chmod +x ~/.local/bin/* 2>/dev/null || true
     
     log "Dotfiles installed successfully"
+}
+
+# Setup GTK themes and appearance
+setup_gtk_themes() {
+    step "Setting up GTK themes and appearance (Athena/HTB Dark Theme)"
+    
+    # Create GTK config directories
+    mkdir -p ~/.config/gtk-3.0
+    mkdir -p ~/.config/gtk-4.0
+    
+    info "Installing GTK theme configurations..."
+    
+    # Install GTK configurations
+    if [[ -f "$DOTFILES_DIR/config/gtk/.gtkrc-2.0" ]]; then
+        cp "$DOTFILES_DIR/config/gtk/.gtkrc-2.0" ~/
+        cp "$DOTFILES_DIR/config/gtk/.gtkrc-2.0.mine" ~/ 2>/dev/null || true
+    fi
+    
+    if [[ -f "$DOTFILES_DIR/config/gtk/gtk-3.0/settings.ini" ]]; then
+        cp "$DOTFILES_DIR/config/gtk/gtk-3.0/settings.ini" ~/.config/gtk-3.0/
+    fi
+    
+    if [[ -f "$DOTFILES_DIR/config/gtk/gtk-4.0/settings.ini" ]]; then
+        cp "$DOTFILES_DIR/config/gtk/gtk-4.0/settings.ini" ~/.config/gtk-4.0/
+    fi
+    
+    # Apply themes using gsettings (for immediate effect)
+    info "Applying GTK themes..."
+    gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark' 2>/dev/null || true
+    gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark' 2>/dev/null || true
+    gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic' 2>/dev/null || true
+    gsettings set org.gnome.desktop.interface cursor-size 24 2>/dev/null || true
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
+    
+    # Set Qt theme to match GTK
+    export QT_QPA_PLATFORMTHEME=gtk3
+    echo 'export QT_QPA_PLATFORMTHEME=gtk3' >> ~/.profile 2>/dev/null || true
+    
+    log "GTK themes configured for Athena/HTB dark aesthetic"
 }
 
 # Setup Fish shell
@@ -632,6 +683,12 @@ print_completion() {
     echo -e "  ${CYAN}cyberlist${NC}               - Browse all security functions"
     echo -e "  ${CYAN}~/update-dotfiles.sh${NC}    - Update configurations"
     
+    echo -e "\n${PURPLE}Theme Configuration:${NC}"
+    echo -e "  ${CYAN}GTK Theme${NC}               - Materia-dark (Athena/HTB aesthetic)"
+    echo -e "  ${CYAN}Icon Theme${NC}              - Papirus-Dark"
+    echo -e "  ${CYAN}Cursor Theme${NC}            - Bibata-Modern-Classic"
+    echo -e "  ${CYAN}Ghostty Terminal${NC}        - Fr3akazo1d theme with OpenGL fallback"
+    
     echo -e "\n${GREEN}Happy hacking with your enhanced cybersecurity workstation! 🏴‍☠️${NC}"
     echo -e "${CYAN}Repository: https://github.com/fr3akazo1d-sec/arch-dotfiles${NC}"
 }
@@ -710,6 +767,7 @@ main() {
     clone_dotfiles
     backup_configs
     install_dotfiles
+    setup_gtk_themes
     setup_fish_shell
     setup_nix
     create_cybersec_structure
