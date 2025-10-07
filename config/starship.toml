@@ -92,7 +92,7 @@ error_symbol = "[❯](bold red)"
 # Programming languages
 [python]
 symbol = " "
-format = "[ ${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style)"
+format = "[ ${symbol}${pyenv_prefix}(${version})(\\($virtualenv\\))]($style)"
 style = "yellow"
 
 [nodejs]
