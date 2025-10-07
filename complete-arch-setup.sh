@@ -321,12 +321,13 @@ install_aur_packages() {
     
     # AUR packages (try Chaotic-AUR first, then compile if needed)
     local aur_packages=(
-        "ghostty-git"           # Terminal
+        "ghostty"               # Terminal (stable version - fallback: kitty/alacritty available in main repos)
         "hyprpicker"            # Color picker
         "wlogout"              # Logout menu
         "waybar-hyprland-git"  # Enhanced waybar
         "rofi-calc"            # Calculator for rofi
         "rofi-emoji"           # Emoji picker
+        "rofi-power-menu"      # Power menu for rofi
         "visual-studio-code-bin"
         "discord"
         "spotify"

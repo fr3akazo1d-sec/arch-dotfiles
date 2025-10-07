@@ -13,6 +13,9 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  # Allow unfree packages (needed for vscode, discord, etc.)
+  nixpkgs.config.allowUnfree = true;
+
   # Packages to install
   home.packages = with pkgs; [
     # Development tools
@@ -24,7 +27,7 @@
     fish
     starship
     bat
-    exa
+    eza
     ripgrep
     fd
     fzf
