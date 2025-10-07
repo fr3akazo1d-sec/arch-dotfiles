@@ -68,10 +68,41 @@ Consider creating a distro-specific version of this script."
     fi
 }
 
+# Setup Chaotic-AUR repository for faster AUR package installation
+setup_chaotic_aur() {
+    step "Setting up Chaotic-AUR repository for faster package installation"
+    
+    # Check if Chaotic-AUR is already configured
+    if grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
+        info "Chaotic-AUR repository already configured"
+        return 0
+    fi
+    
+    info "Adding Chaotic-AUR keyring and mirrorlist..."
+    
+    # Add the primary key
+    sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || warn "Failed to receive key, continuing..."
+    sudo pacman-key --lsign-key 3056513887B78AEB || warn "Failed to sign key, continuing..."
+    
+    # Install keyring and mirrorlist packages
+    info "Installing Chaotic-AUR keyring and mirrorlist..."
+    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || warn "Failed to install chaotic-keyring"
+    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || warn "Failed to install chaotic-mirrorlist"
+    
+    # Add repository to pacman.conf
+    info "Adding Chaotic-AUR repository to pacman.conf..."
+    echo "" | sudo tee -a /etc/pacman.conf
+    echo "[chaotic-aur]" | sudo tee -a /etc/pacman.conf
+    echo "Include = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
+    
+    log "Chaotic-AUR repository configured successfully"
+}
+
 # Update system and install base packages
 install_base_packages() {
     step "Updating system and installing base packages"
     
+    # Full system update with new repositories
     sudo pacman -Syu --noconfirm
     
     # Essential packages
@@ -199,7 +230,7 @@ install_aur_packages() {
         fi
     fi
     
-    # AUR packages
+    # AUR packages (try Chaotic-AUR first, then compile if needed)
     local aur_packages=(
         "ghostty-git"           # Terminal
         "hyprpicker"            # Color picker
@@ -214,8 +245,14 @@ install_aur_packages() {
     )
     
     for package in "${aur_packages[@]}"; do
-        info "Installing $package from AUR..."
-        paru -S --noconfirm "$package" || warn "Failed to install $package from AUR"
+        info "Installing $package..."
+        # Try pacman first (Chaotic-AUR), then fall back to paru
+        if ! sudo pacman -S --noconfirm "$package" 2>/dev/null; then
+            info "$package not available in Chaotic-AUR, compiling from AUR..."
+            paru -S --noconfirm "$package" || warn "Failed to install $package"
+        else
+            info "$package installed from Chaotic-AUR (pre-compiled)"
+        fi
     done
     
     log "AUR packages installed"
@@ -482,6 +519,54 @@ print_completion() {
     echo "╚══════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
     
+    echo -e "${CYAN}${ROCKET} Your complete Arch Linux cybersecurity environment is ready!${NC}\n"
+    
+    echo -e "${YELLOW}What was installed:${NC}"
+    echo -e "  ${HYPR} Hyprland with complete Wayland setup"
+    echo -e "  ${DESKTOP} Waybar, Rofi, SwayNC, Ghostty terminal"
+    echo -e "  ${FISH} Fish shell with 90+ cybersecurity functions"
+    echo -e "  ${SHIELD} Complete cybersecurity toolkit"
+    echo -e "  ${GEAR} Nix package manager with Home Manager"
+    echo -e "  ${ROCKET} Chaotic-AUR repository for faster AUR packages"
+    
+    echo -e "\n${YELLOW}Next steps:${NC}"
+    echo -e "  1. ${BLUE}Reboot your system${NC}"
+    echo -e "  2. ${BLUE}Login and select 'Hyprland' session${NC}"
+    echo -e "  3. ${BLUE}Press Super+Return${NC} to open Ghostty terminal"
+    echo -e "  4. ${BLUE}Run 'fish'${NC} to start Fish shell with enhanced greeting"
+    echo -e "  5. ${BLUE}Run 'rt'${NC} to check red team infrastructure status"
+    
+    echo -e "\n${GREEN}Key shortcuts (after reboot):${NC}"
+    echo -e "  ${CYAN}Super + Return${NC}        - Open terminal (Ghostty)"
+    echo -e "  ${CYAN}Super + D${NC}             - Application launcher (Rofi)"
+    echo -e "  ${CYAN}Super + Q${NC}             - Close window"
+    echo -e "  ${CYAN}Super + M${NC}             - Exit Hyprland"
+    echo -e "  ${CYAN}Super + V${NC}             - Toggle floating"
+    echo -e "  ${CYAN}Super + F${NC}             - Toggle fullscreen"
+    echo -e "  ${CYAN}Super + 1-9${NC}           - Switch workspaces"
+    
+    echo -e "\n${PURPLE}Useful Fish commands:${NC}"
+    echo -e "  ${CYAN}rt / redteam-status${NC}     - Red team infrastructure check"
+    echo -e "  ${CYAN}sys / sys-status${NC}        - System resource monitoring" 
+    echo -e "  ${CYAN}tools / tools-check${NC}     - Cybersec arsenal status"
+    echo -e "  ${CYAN}net / net-recon${NC}         - Network reconnaissance"
+    echo -e "  ${CYAN}cyberlist${NC}               - Browse all security functions"
+    echo -e "  ${CYAN}~/update-dotfiles.sh${NC}    - Update configurations"
+    
+    echo -e "\n${GREEN}Happy hacking with your enhanced cybersecurity workstation! 🏴‍☠️${NC}"
+    echo -e "${CYAN}Repository: https://github.com/fr3akazo1d-sec/arch-dotfiles${NC}"
+}
+
+# Main execution
+
+# Print completion message
+print_completion() {
+    echo -e "\n${GREEN}"
+    echo "╔══════════════════════════════════════════════════════════════════╗"
+    echo "║                    🎉 SETUP COMPLETED! 🎉                       ║"
+    echo "╚══════════════════════════════════════════════════════════════════╝"
+    echo -e "${NC}"
+    
     echo -e "${CYAN}${ROCKET} Your complete Arch Linux environment is ready!${NC}\n"
     
     echo -e "${YELLOW}What was installed:${NC}"
@@ -538,6 +623,7 @@ main() {
     
     check_root
     check_distro
+    setup_chaotic_aur
     install_base_packages
     install_aur_packages
     clone_dotfiles
