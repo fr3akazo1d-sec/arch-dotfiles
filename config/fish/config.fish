@@ -3,10 +3,6 @@ status is-interactive; and begin
     # Aliases
     alias free 'free -h'
     alias ll 'ls -l'
-    alias update 'sudo pacman -Syu'
-    alias install 'sudo pacman -S'
-    alias search 'pacman -Ss'
-    alias remove 'sudo pacman -Rs'
 
     # Interactive shell initialisation
     # --- HACKER FISH CONFIG ---
@@ -108,13 +104,14 @@ status is-interactive; and begin
         set CYAN (set_color cyan --bold)
         set MAGENTA (set_color magenta --bold)
         set WHITE (set_color white --bold)
+        set GRAY (set_color brblack)
         set NORMAL (set_color normal)
         
         # Main Greeting Banner
         echo ""
-        echo "$RED┌─────────────────────────────────────────────────────────────────────┐$NORMAL"
-        echo "$RED│  $CYAN🔴 $WHITE H4CK3R T3RM1N4L $CYAN🔴 $WHITE- $GREEN Fr3akazo1d-sec $WHITE Workstation    $RED│$NORMAL"  
-        echo "$RED└─────────────────────────────────────────────────────────────────────┘$NORMAL"
+        echo "$RED╔═════════════════════════════════════════════════════════════════════╗$NORMAL"
+        echo "$RED║  $CYAN🔴 $WHITE H4CK3R T3RM1N4L $CYAN🔴 $WHITE- $GREEN Fr3akazo1d-sec $WHITE Workstation    $RED          ║$NORMAL"  
+        echo "$RED╚═════════════════════════════════════════════════════════════════════╝$NORMAL"
         
         # System Information
         set host_name (hostname)
@@ -133,46 +130,68 @@ status is-interactive; and begin
         set public_ip (curl -s --connect-timeout 3 ifconfig.me 2>/dev/null || echo "Offline")
         
         # Red Team Infrastructure Checks
+        # System Status Box
         echo ""
         echo "$YELLOW┌─ 🖥️  SYSTEM STATUS ─────────────────────────────────────────────────┐$NORMAL"
-        echo "$YELLOW│$NORMAL $CYAN Host:$NORMAL $WHITE$host_name$NORMAL | $CYAN Kernel:$NORMAL $WHITE$kernel$NORMAL"
-        echo "$YELLOW│$NORMAL $CYAN OS:$NORMAL $WHITE$distro$NORMAL"
-        echo "$YELLOW│$NORMAL $CYAN Uptime:$NORMAL $WHITE$uptime_raw$NORMAL | $CYAN Load:$NORMAL $WHITE$load_avg$NORMAL"
-        echo "$YELLOW│$NORMAL $CYAN CPU Cores:$NORMAL $WHITE$cpu_cores$NORMAL | $CYAN Memory:$NORMAL $WHITE$memory_info$NORMAL"
+        echo "$YELLOW│$NORMAL   $CYAN Host:$NORMAL $WHITE$host_name$NORMAL $GRAY│$NORMAL   $CYAN Kernel:$NORMAL $WHITE$kernel$NORMAL"
+        echo "$YELLOW│$NORMAL   $CYAN OS:$NORMAL $WHITE$distro$NORMAL"
+        echo "$YELLOW│$NORMAL   $CYAN Uptime:$NORMAL $WHITE$uptime_raw$NORMAL $GRAY│$NORMAL   $CYAN Load:$NORMAL $WHITE$load_avg$NORMAL"
+        echo "$YELLOW│$NORMAL   $CYAN CPU Cores:$NORMAL $WHITE$cpu_cores$NORMAL $GRAY│$NORMAL   $CYAN Memory:$NORMAL $WHITE$memory_info$NORMAL"
         echo "$YELLOW└─────────────────────────────────────────────────────────────────────┘$NORMAL"
         
+        # Network & VPN Status Box
         echo ""
-        echo "$BLUE┌─ 🌐 NETWORK & CONNECTIVITY ────────────────────────────────────────────┐$NORMAL"
-        echo "$BLUE│$NORMAL $CYAN Interface:$NORMAL $WHITE$primary_interface$NORMAL | $CYAN Local IP:$NORMAL $WHITE$local_ip$NORMAL"
+        echo "$BLUE┌─ 🌐 NETWORK & CONNECTIVITY ─────────────────────────────────────────┐$NORMAL"
+        echo "$BLUE│$NORMAL   $CYAN Interface:$NORMAL $WHITE$primary_interface$NORMAL $GRAY│$NORMAL   $CYAN Local IP:$NORMAL $WHITE$local_ip$NORMAL"
         
         # Public IP with status indicator
         if test "$public_ip" != "Offline"
-            echo "$BLUE│$NORMAL $CYAN Public IP:$NORMAL $GREEN$public_ip$NORMAL ✅"
+            echo "$BLUE│$NORMAL   $CYAN Public IP:$NORMAL $GREEN$public_ip$NORMAL ✅"
         else
-            echo "$BLUE│$NORMAL $CYAN Public IP:$NORMAL $RED$public_ip$NORMAL ❌"
+            echo "$BLUE│$NORMAL   $CYAN Public IP:$NORMAL $RED$public_ip$NORMAL ❌"
         end
         
-        # Red Team Infrastructure Checks
         echo "$BLUE│$NORMAL"
         echo "$BLUE│$NORMAL $MAGENTA🔴 RED TEAM INFRASTRUCTURE STATUS:$NORMAL"
         
-        # Check VPN Connection (common VPN interfaces)
-        set vpn_status "❌ Disconnected"
-        set vpn_color $RED
-        if ip addr show tun0 >/dev/null 2>&1; or ip addr show vpn >/dev/null 2>&1; or ip addr show wg0 >/dev/null 2>&1
-            set vpn_status "✅ Connected"
-            set vpn_color $GREEN
-            set vpn_ip (ip addr show tun0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1; or ip addr show wg0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1; or echo "VPN Active")
-            echo "$BLUE│$NORMAL   $CYAN VPN:$NORMAL $vpn_color$vpn_status$NORMAL ($WHITE$vpn_ip$NORMAL)"
-        else
-            echo "$BLUE│$NORMAL   $CYAN VPN:$NORMAL $vpn_color$vpn_status$NORMAL"
+        # Enhanced VPN/WireGuard Detection
+        set vpn_found false
+        set vpn_interfaces
+        
+        # Check OpenVPN interfaces
+        if ip addr show tun0 >/dev/null 2>&1
+            set vpn_ip (ip addr show tun0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+            echo "$BLUE│$NORMAL     $CYAN OpenVPN:$NORMAL $GREEN✅ Connected$NORMAL $GRAY($WHITE$vpn_ip$NORMAL$GRAY)$NORMAL"
+            set vpn_found true
+        end
+        
+        # Check WireGuard interfaces
+        if type -q wg
+            set wg_interfaces (wg show interfaces 2>/dev/null)
+            if test -n "$wg_interfaces"
+                for wg_if in $wg_interfaces
+                    set wg_ip (ip addr show $wg_if 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+                    if test -n "$wg_ip"
+                        echo "$BLUE│$NORMAL     $CYAN WireGuard ($wg_if):$NORMAL $GREEN✅ Connected$NORMAL $GRAY($WHITE$wg_ip$NORMAL$GRAY)$NORMAL"
+                        set vpn_found true
+                    else
+                        echo "$BLUE│$NORMAL     $CYAN WireGuard ($wg_if):$NORMAL $GREEN✅ Active$NORMAL $GRAY(no local IP)$NORMAL"
+                        set vpn_found true
+                    end
+                end
+            end
+        end
+        
+        # If no VPN found, show disconnected
+        if test "$vpn_found" = "false"
+            echo "$BLUE│$NORMAL     $CYAN VPN/WireGuard:$NORMAL $RED❌ Disconnected$NORMAL"
         end
         
         # Check Tor Service  
         if systemctl is-active tor >/dev/null 2>&1
-            echo "$BLUE│$NORMAL   $CYAN Tor:$NORMAL $GREEN✅ Running$NORMAL"
+            echo "$BLUE│$NORMAL     $CYAN Tor Service:$NORMAL $GREEN✅ Running$NORMAL"
         else
-            echo "$BLUE│$NORMAL   $CYAN Tor:$NORMAL $RED❌ Stopped$NORMAL"
+            echo "$BLUE│$NORMAL     $CYAN Tor Service:$NORMAL $RED❌ Stopped$NORMAL"
         end
         
         # Check SSH Agent
@@ -446,6 +465,19 @@ status is-interactive; and begin
         alias yayup='yay -Syu'
     end
 
+    # Fix pacman tab completion only if using German locale
+    if string match -q "*de_*" "$LANG"
+        # German locale causes tr command errors in Fish pacman completions
+        complete -c pacman -e
+        complete -c sudo -e
+        
+        # Simple direct pacman completion (avoid complex Fish completion system)
+        complete -c pacman -x -s S -a '(env LC_ALL=C pacman -Slq 2>/dev/null)'
+        complete -c sudo -x -a 'pacman' -d 'Package manager'
+        
+        echo "Applied German locale fix for pacman completions"
+    end
+    
     # wireguard aliases
     alias wg-rt-admin-prod-up='sudo wg-quick up wg0'
     alias wg-rt-admin-prod-down='sudo wg-quick down wg0'

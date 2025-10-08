@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 🐧 Complete Arch Linux Desktop + Cybersecurity Setup
-# Installs Hyprland, Waybar, Rofi, Ghostty, SwayNC + Fish + Cybersec tools
+# Installs Hyprland, Waybar, Rofi, Wezterm, SwayNC + Fish + Cybersec tools
 # Author: fr3akazo1d-sec
 # Version: 2.0
 
@@ -31,7 +31,7 @@ print_header() {
     echo -e "${CYAN}"
     echo "╔══════════════════════════════════════════════════════════════════╗"
     echo "║         🐧 Complete Arch Linux Desktop + Cybersec Setup 🔒      ║"
-    echo "║      Hyprland + Waybar + Rofi + Ghostty + Fish + Nix + Tools    ║"
+    echo "║      Hyprland + Waybar + Rofi + Wezterm + Fish + Nix + Tools    ║"
     echo "╚══════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
 }
@@ -45,6 +45,67 @@ step() { echo -e "\n${PURPLE}${GEAR}${NC} ${CYAN}$1${NC}"; }
 # Configuration
 DOTFILES_REPO="fr3akazo1d-sec/arch-dotfiles"
 DOTFILES_DIR="$HOME/.dotfiles"
+
+# Error tracking arrays
+FAILED_PACKAGES=()
+FAILED_REPOS=()
+FAILED_STEPS=()
+INSTALLATION_LOG="/tmp/arch-setup-$(date +%Y%m%d-%H%M%S).log"
+
+# Error tracking functions
+track_error() {
+    local type="$1"
+    local item="$2"
+    local error_msg="$3"
+    
+    case "$type" in
+        "package")
+            FAILED_PACKAGES+=("$item")
+            echo "[$(date)] FAILED PACKAGE: $item - $error_msg" >> "$INSTALLATION_LOG"
+            ;;
+        "repo")
+            FAILED_REPOS+=("$item")
+            echo "[$(date)] FAILED REPO: $item - $error_msg" >> "$INSTALLATION_LOG"
+            ;;
+        "step")
+            FAILED_STEPS+=("$item")
+            echo "[$(date)] FAILED STEP: $item - $error_msg" >> "$INSTALLATION_LOG"
+            ;;
+    esac
+}
+
+# Safe package installation with error tracking
+safe_install() {
+    local package="$1"
+    local method="$2"  # "pacman", "paru", or "chaotic"
+    
+    case "$method" in
+        "pacman")
+            if ! sudo pacman -S --noconfirm "$package" 2>>"$INSTALLATION_LOG"; then
+                track_error "package" "$package" "Failed with pacman"
+                warn "Failed to install $package with pacman"
+                return 1
+            fi
+            ;;
+        "paru")
+            if ! paru -S --noconfirm "$package" 2>>"$INSTALLATION_LOG"; then
+                track_error "package" "$package" "Failed with paru (AUR)"
+                warn "Failed to install $package with paru"
+                return 1
+            fi
+            ;;
+        "chaotic")
+            if ! sudo pacman -S --noconfirm "$package" 2>>"$INSTALLATION_LOG"; then
+                track_error "package" "$package" "Failed with chaotic-aur"
+                warn "Failed to install $package from Chaotic-AUR"
+                return 1
+            fi
+            ;;
+    esac
+    
+    echo "[$(date)] SUCCESS: $package installed via $method" >> "$INSTALLATION_LOG"
+    return 0
+}
 
 check_root() {
     if [[ $EUID -eq 0 ]]; then
@@ -81,12 +142,22 @@ setup_chaotic_aur() {
     info "Adding Chaotic-AUR keyring and mirrorlist..."
     
     # Add the primary key
-    sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || warn "Failed to receive key, continuing..."
-    sudo pacman-key --lsign-key 3056513887B78AEB || warn "Failed to sign key, continuing..."
+    if ! sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com; then
+        track_error "repo" "Chaotic-AUR" "Failed to receive GPG key"
+        warn "Failed to receive key, continuing..."
+    fi
+    
+    if ! sudo pacman-key --lsign-key 3056513887B78AEB; then
+        track_error "repo" "Chaotic-AUR" "Failed to sign GPG key"
+        warn "Failed to sign key, continuing..."
+    fi
     
     # Install keyring and mirrorlist packages
     info "Installing Chaotic-AUR keyring and mirrorlist..."
-    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || warn "Failed to install chaotic-keyring"
+    if ! sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'; then
+        track_error "repo" "Chaotic-AUR" "Failed to install chaotic-keyring"
+        warn "Failed to install chaotic-keyring"
+    fi
     sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || warn "Failed to install chaotic-mirrorlist"
     
     # Add repository to pacman.conf
@@ -217,6 +288,7 @@ install_base_packages() {
         "neofetch"
         "tree"
         "fzf"
+        "kitty"                # Backup terminal (always available)
         "bat"
         "exa"
         "ripgrep"
@@ -251,7 +323,9 @@ install_base_packages() {
     
     for package in "${packages[@]}"; do
         info "Installing $package..."
-        sudo pacman -S --noconfirm "$package" || warn "Failed to install $package, continuing..."
+        if ! safe_install "$package" "pacman"; then
+            warn "Failed to install $package, continuing..."
+        fi
     done
     
     log "Base packages installed successfully"
@@ -284,7 +358,9 @@ install_athena_tools() {
     for tool in "${athena_tools[@]}"; do
         info "Installing $tool..."
         # Try to install from Athena repository, continue if not available
-        sudo pacman -S --noconfirm "$tool" 2>/dev/null || info "$tool not available in Athena repo, skipping..."
+        if ! safe_install "$tool" "pacman"; then
+            info "$tool not available in Athena repo, skipping..."
+        fi
     done
     
     log "Athena cybersecurity tools installation completed"
@@ -321,7 +397,8 @@ install_aur_packages() {
     
     # AUR packages (try Chaotic-AUR first, then compile if needed)
     local aur_packages=(
-        "ghostty"               # Terminal (stable version - fallback: kitty/alacritty available in main repos)
+        "wezterm-git"           # Terminal (latest version with all fixes)
+        "kitty"                 # Fallback terminal (reliable, fast)
         "hyprpicker"            # Color picker
         "wlogout"              # Logout menu
         "waybar-hyprland-git"  # Enhanced waybar
@@ -339,11 +416,13 @@ install_aur_packages() {
     for package in "${aur_packages[@]}"; do
         info "Installing $package..."
         # Try pacman first (Chaotic-AUR), then fall back to paru
-        if ! sudo pacman -S --noconfirm "$package" 2>/dev/null; then
-            info "$package not available in Chaotic-AUR, compiling from AUR..."
-            paru -S --noconfirm "$package" || warn "Failed to install $package"
-        else
+        if safe_install "$package" "chaotic"; then
             info "$package installed from Chaotic-AUR (pre-compiled)"
+        else
+            info "$package not available in Chaotic-AUR, compiling from AUR..."
+            if ! safe_install "$package" "paru"; then
+                warn "Failed to install $package from both Chaotic-AUR and AUR"
+            fi
         fi
     done
     
@@ -380,7 +459,7 @@ backup_configs() {
         ".config/rofi"
         ".config/swaync"
         ".config/fish"
-        ".config/ghostty"
+        ".config/wezterm"
         ".config/wallpapers"
         ".config/starship.toml"
     )
@@ -402,7 +481,7 @@ install_dotfiles() {
     cd "$DOTFILES_DIR"
     
     # Create necessary directories
-    mkdir -p ~/.config/{hypr,waybar,rofi,swaync,fish,ghostty}
+    mkdir -p ~/.config/{hypr,waybar,rofi,swaync,fish,wezterm}
     
     # Copy configuration files
     info "Installing Hyprland configuration..."
@@ -420,8 +499,8 @@ install_dotfiles() {
     info "Installing Fish configuration..."
     cp -r config/fish/* ~/.config/fish/ 2>/dev/null || true
     
-    info "Installing Ghostty configuration..."
-    cp -r config/ghostty/* ~/.config/ghostty/ 2>/dev/null || true
+    info "Installing Wezterm configuration..."
+    cp -r config/wezterm/* ~/.config/wezterm/ 2>/dev/null || true
     
     # Starship configuration (if exists)
     if [[ -f config/starship.toml ]]; then
@@ -620,7 +699,7 @@ cp -r config/waybar/* ~/.config/waybar/
 cp -r config/rofi/* ~/.config/rofi/
 cp -r config/swaync/* ~/.config/swaync/
 cp -r config/fish/* ~/.config/fish/
-cp -r config/ghostty/* ~/.config/ghostty/
+cp -r config/wezterm/* ~/.config/wezterm/
 # Copy starship config if it exists
 if [[ -f config/starship.toml ]]; then
     cp config/starship.toml ~/.config/
@@ -654,7 +733,7 @@ print_completion() {
     
     echo -e "${YELLOW}What was installed:${NC}"
     echo -e "  ${HYPR} Hyprland with complete Wayland setup"
-    echo -e "  ${DESKTOP} Waybar, Rofi, SwayNC, Ghostty terminal"
+    echo -e "  ${DESKTOP} Waybar, Rofi, SwayNC, Wezterm terminal"
     echo -e "  ${FISH} Fish shell with 90+ cybersecurity functions"
     echo -e "  ${SHIELD} Complete cybersecurity toolkit with Athena OS tools"
     echo -e "  ${GEAR} Nix package manager with Home Manager"
@@ -663,12 +742,12 @@ print_completion() {
     echo -e "\n${YELLOW}Next steps:${NC}"
     echo -e "  1. ${BLUE}Reboot your system${NC}"
     echo -e "  2. ${BLUE}Login and select 'Hyprland' session${NC}"
-    echo -e "  3. ${BLUE}Press Super+Return${NC} to open Ghostty terminal"
+    echo -e "  3. ${BLUE}Press Super+Return${NC} to open Wezterm terminal"
     echo -e "  4. ${BLUE}Run 'fish'${NC} to start Fish shell with enhanced greeting"
     echo -e "  5. ${BLUE}Run 'rt'${NC} to check red team infrastructure status"
     
     echo -e "\n${GREEN}Key shortcuts (after reboot):${NC}"
-    echo -e "  ${CYAN}Super + Return${NC}        - Open terminal (Ghostty)"
+    echo -e "  ${CYAN}Super + Return${NC}        - Open terminal (Wezterm)"
     echo -e "  ${CYAN}Super + D${NC}             - Application launcher (Rofi)"
     echo -e "  ${CYAN}Super + Q${NC}             - Close window"
     echo -e "  ${CYAN}Super + M${NC}             - Exit Hyprland"
@@ -688,7 +767,7 @@ print_completion() {
     echo -e "  ${CYAN}GTK Theme${NC}               - Materia-dark (Athena/HTB aesthetic)"
     echo -e "  ${CYAN}Icon Theme${NC}              - Papirus-Dark"
     echo -e "  ${CYAN}Cursor Theme${NC}            - Bibata-Modern-Classic"
-    echo -e "  ${CYAN}Ghostty Terminal${NC}        - Fr3akazo1d theme with OpenGL fallback"
+    echo -e "  ${CYAN}Wezterm Terminal${NC}        - Fr3akazo1d cyberpunk theme with GPU acceleration"
     
     echo -e "\n${GREEN}Happy hacking with your enhanced cybersecurity workstation! 🏴‍☠️${NC}"
     echo -e "${CYAN}Repository: https://github.com/fr3akazo1d-sec/arch-dotfiles${NC}"
@@ -708,7 +787,7 @@ print_completion() {
     
     echo -e "${YELLOW}What was installed:${NC}"
     echo -e "  ${HYPR} Hyprland with complete Wayland setup"
-    echo -e "  ${DESKTOP} Waybar, Rofi, SwayNC, Ghostty terminal"
+    echo -e "  ${DESKTOP} Waybar, Rofi, SwayNC, Wezterm terminal"
     echo -e "  ${FISH} Fish shell with 90+ cybersecurity functions"
     echo -e "  ${SHIELD} Complete cybersecurity toolkit"
     echo -e "  ${GEAR} Nix package manager with Home Manager"
@@ -716,12 +795,12 @@ print_completion() {
     echo -e "\n${YELLOW}Next steps:${NC}"
     echo -e "  1. ${BLUE}Reboot your system${NC}"
     echo -e "  2. ${BLUE}Login and select 'Hyprland' session${NC}"
-    echo -e "  3. ${BLUE}Press Super+Return${NC} to open Ghostty terminal"
+    echo -e "  3. ${BLUE}Press Super+Return${NC} to open Wezterm terminal"
     echo -e "  4. ${BLUE}Run 'fish'${NC} to start Fish shell"
     echo -e "  5. ${BLUE}Run 'showall'${NC} to see all available functions"
     
     echo -e "\n${GREEN}Key shortcuts (after reboot):${NC}"
-    echo -e "  ${CYAN}Super + Return${NC}        - Open terminal (Ghostty)"
+    echo -e "  ${CYAN}Super + Return${NC}        - Open terminal (Wezterm)"
     echo -e "  ${CYAN}Super + D${NC}             - Application launcher (Rofi)"
     echo -e "  ${CYAN}Super + Q${NC}             - Close window"
     echo -e "  ${CYAN}Super + M${NC}             - Exit Hyprland"
@@ -746,7 +825,7 @@ main() {
     info "• Hyprland (Wayland compositor)"
     info "• Waybar (Status bar)"
     info "• Rofi (Application launcher)"
-    info "• Ghostty (Terminal)"
+    info "• Wezterm (Terminal)"
     info "• SwayNC (Notification center)"
     info "• Fish shell + cybersecurity tools"
     info "• Nix package manager"
@@ -777,6 +856,63 @@ main() {
     setup_dev_environment
     final_setup
     print_completion
+    print_error_summary
+}
+
+# Error summary function
+print_error_summary() {
+    echo -e "\n${PURPLE}${GEAR}${NC} ${CYAN}Installation Summary${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════════════════${NC}"
+    
+    # Count totals
+    local total_errors=$((${#FAILED_PACKAGES[@]} + ${#FAILED_REPOS[@]} + ${#FAILED_STEPS[@]}))
+    
+    if [ $total_errors -eq 0 ]; then
+        echo -e "${GREEN}${CHECK} Perfect installation! No errors detected.${NC}"
+    else
+        echo -e "${YELLOW}${WARN} Installation completed with ${total_errors} issue(s):${NC}\n"
+        
+        # Failed packages
+        if [ ${#FAILED_PACKAGES[@]} -gt 0 ]; then
+            echo -e "${RED}${ERROR} Failed Packages (${#FAILED_PACKAGES[@]}):${NC}"
+            for package in "${FAILED_PACKAGES[@]}"; do
+                echo -e "  ${RED}•${NC} $package"
+            done
+            echo ""
+        fi
+        
+        # Failed repositories
+        if [ ${#FAILED_REPOS[@]} -gt 0 ]; then
+            echo -e "${RED}${ERROR} Failed Repositories (${#FAILED_REPOS[@]}):${NC}"
+            for repo in "${FAILED_REPOS[@]}"; do
+                echo -e "  ${RED}•${NC} $repo"
+            done
+            echo ""
+        fi
+        
+        # Failed steps
+        if [ ${#FAILED_STEPS[@]} -gt 0 ]; then
+            echo -e "${RED}${ERROR} Failed Steps (${#FAILED_STEPS[@]}):${NC}"
+            for step in "${FAILED_STEPS[@]}"; do
+                echo -e "  ${RED}•${NC} $step"
+            done
+            echo ""
+        fi
+        
+        echo -e "${BLUE}${INFO} Detailed log available at: ${INSTALLATION_LOG}${NC}"
+        echo -e "${YELLOW}${WARN} You may need to manually install failed packages or troubleshoot issues.${NC}"
+        
+        # Suggest fixes for common failures
+        if [[ " ${FAILED_PACKAGES[@]} " =~ " wezterm-git " ]]; then
+            echo -e "${CYAN}💡 Wezterm fix: Try 'paru -S wezterm-git' manually or use 'kitty' as alternative${NC}"
+        fi
+        
+        if [[ " ${FAILED_PACKAGES[@]} " =~ " rofi-power-menu " ]]; then
+            echo -e "${CYAN}💡 Rofi-power-menu fix: Try 'paru -S rofi-power-menu' manually${NC}"
+        fi
+    fi
+    
+    echo -e "\n${GREEN}${ROCKET} Setup completed! Check the summary above for any issues.${NC}"
 }
 
 main "$@"
