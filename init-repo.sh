@@ -47,7 +47,6 @@ git commit -m "🚀 Initial commit: Complete Arch Linux dotfiles
 - 🔔 SwayNC notification center
 - 🖥️ Ghostty terminal configuration
 - 🐟 Fish shell with 90+ cybersecurity functions
-- 🏠 Home Manager Nix configuration
 - 🛡️ Complete cybersecurity toolkit integration
 - 📦 HackTheBox, TryHackMe, HackSmarter support
 - 🔧 Automated installation scripts

@@ -1,50 +1,43 @@
   {
   "layer": "top",
   "position": "top",
-  "height": 38,
+  "height": 34,
   "spacing": 8,
 
   "modules-left": [ "custom/f_logo", "hyprland/workspaces", "hyprland/window" ],
-  "modules-center": [ "mpris", "cpu", "memory", "temperature", "disk" ],
+  "modules-center": [ "cpu", "memory", "temperature", "disk" ],
   "modules-right": [
-    "custom/vpn-netbird",
-    "custom/vpn-wireguard",
-    "custom/vpn-openvpn",
+    "custom/vpn-ip",
     "network",
+    "mpris",
     "pulseaudio",
     "bluetooth",
-    "custom/pomodoro",
     "custom/notifications",
     "battery",
-    "clock",
+    "clock#time",
+    "clock#date",
     "tray",
     "custom/exit"
   ],
 
   "mpris": {
-    "format": " {status_icon} ",
-    "format-paused": " {status_icon} ",
-    "format-stopped": "",
+    "format": "{player_icon} {status_icon}",
+    "format-paused": "{player_icon} ",
     "player-icons": {
-      "spotify": "SPT",
-      "firefox": "FFX",
-      "default": "MUS"
+      "spotify": "",
+      "firefox": "",
+      "default": ""
     },
     "status-icons": {
-      "playing": "Ⅱ",
-      "paused": "▶"
+      "playing": "▶",
+      "paused": ""
     },
-    "tooltip-format": "{artist} - {title}\n{album} | {player}",
-    "on-click": "playerctl play-pause",
-    "on-scroll-up": "playerctl next",
-    "on-scroll-down": "playerctl previous",
-    "interval": 5,
-    "min-length": 6,
-    "max-length": 10
+    "tooltip-format": "{player}: {artist} - {title}",
+    "max-length": 30
   },
 
   "cpu": {
-    "interval": 5,
+    "interval": 2,
     "format": "󰻠 {usage}%",
     "format-alt": "󰻠 {avg_frequency}GHz",
     "tooltip-format": "CPU Usage: {usage}%\nAvg Frequency: {avg_frequency}GHz\nLoad: {load}",
@@ -56,8 +49,8 @@
 
   "memory": {
     "interval": 5,
-    "format": "󰍛 {}%",
-    "format-alt": "󰍛 {used:0.1f}G",
+    "format": " {}%",
+    "format-alt": " {used:0.1f}G",
     "tooltip-format": "RAM: {used:0.1f}G / {total:0.1f}G ({percentage}%)\nSwap: {swapUsed:0.1f}G / {swapTotal:0.1f}G",
     "states": {
       "warning": 70,
@@ -94,12 +87,9 @@
   },
 
   "hyprland/window": {
-    "format": "{title}",
-    "max-length": 36,
-    "separate-outputs": true,
-    "rewrite": {
-      "": ""
-    }
+    "format": "{}",
+    "max-length": 60,
+    "empty-window-text": "Desktop"
   },
 
   "hyprland/workspaces": {
@@ -109,6 +99,15 @@
     "sort-by-number": true
   },
 
+  "window": {
+    "max-length": 80,
+    "separate-outputs": false,
+    "format": "{title}",
+    "rewrite": {
+      "(.*) — Mozilla Firefox": "  $1",
+      "(.*) — Ghostty": "  $1"
+    }
+  },
 
   "bluetooth": {
   "format": " {status}",
@@ -125,7 +124,7 @@
 },
 
   "network": {
-  "interval": 30,
+  "interval": 2,
   "format-wifi": "  {signalStrength}%",
   "format-ethernet": "󰈁 {bandwidthDownBytes}",
   "format-disconnected": "󰖪",
@@ -139,8 +138,8 @@
   "pulseaudio": {
     "format": "{icon}  {volume}%",
     "format-bluetooth": "{volume}% {icon} {format_source}",
-    "format-bluetooth-muted": "󰝟 {icon} {format_source}",
-    "format-muted": "󰝟 {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": " {format_source}",
     "format-source": "{volume}% ",
     "format-source-muted": "",
     "format-icons": {
@@ -162,14 +161,12 @@
     "format-plugged": " {capacity}%",
     "format-alt": "{time}",
     "format-icons": ["", "", "", "", ""],
-    "states": { "warning": 30, "critical": 15 },
-    "interval": 30
+    "interval": 5
   },
 
-"clock": {
-  "interval": 60,
-  "format": "󰥔 {0:%H:%M} | {0:%d·%b}",
-  "format-alt": "󰃭 {0:%A, %d %B %Y}",
+"clock#time": {
+  "interval": 1,
+  "format": "󰥔 {:%H:%M:%S}",
   "tooltip-format": "<tt><small>{calendar}</small></tt>",
   "calendar": {
     "mode": "month",
@@ -187,52 +184,37 @@
     "on-scroll-down": "shift_down"
   }
 },
-"custom/vpn-netbird": {
-  "exec": "~/.config/waybar/scripts/vpn_netbird.sh",
-  "interval": 15,
-  "return-type": "json",
-  "format": "{}",
-  "tooltip": true
-},
 
-"custom/vpn-wireguard": {
-  "exec": "~/.config/waybar/scripts/vpn_wireguard.sh",
-  "interval": 15,
-  "return-type": "json",
-  "format": "{}",
-  "tooltip": true
+"clock#date": {
+  "interval": 60,
+  "format": "󰃭 {:%d·%b}",
+  "format-alt": "󰃭 {:%A, %d %B %Y}",
+  "tooltip-format": "<tt><small>{calendar}</small></tt>",
+  "calendar": {
+    "mode": "month",
+    "format": {
+      "months": "<span color='#00fff7'><b>{}</b></span>",
+      "days": "<span color='#ffffff'><b>{}</b></span>",
+      "weekdays": "<span color='#00fff7'><b>{}</b></span>",
+      "today": "<span color='#ff003c'><b><u>{}</u></b></span>"
+    }
+  }
 },
-
-"custom/vpn-openvpn": {
-  "exec": "~/.config/waybar/scripts/vpn_openvpn.sh",
-  "interval": 15,
-  "return-type": "json",
-  "format": "{}",
+"custom/vpn-ip": {
+  "exec": "~/.config/waybar/scripts/vpn_ip.sh",
+  "interval": 10,
+  "return-type": "text",
   "tooltip": true
 },
 
   "custom/notifications": {
-    "exec": "swaync-client -swb",
-    "return-type": "json",
-    "exec-if": "which swaync-client",
-    "on-click": "swaync-client -t -sw",
-    "on-click-right": "swaync-client -d -sw",
-    "escape": true
-  },
-
-  "custom/pomodoro": {
-    "exec": "~/.config/waybar/scripts/pomodoro.sh status",
-    "return-type": "json",
-    "interval": 5,
-    "on-click": "~/.config/waybar/scripts/pomodoro.sh start",
-    "on-click-middle": "~/.config/waybar/scripts/pomodoro.sh stop",
-    "on-click-right": "~/.config/waybar/scripts/pomodoro.sh toggle",
-    "format": "{}",
-    "tooltip": true
+    "format": "󰂚",
+    "tooltip": "Click to open notifications",
+    "on-click": "swaync-client -t -sw"
   },
 
   "tray": {
-    "icon-size": 16,
-    "spacing": 4
+    "icon-size": 10,
+    "spacing": 2
   }
 }

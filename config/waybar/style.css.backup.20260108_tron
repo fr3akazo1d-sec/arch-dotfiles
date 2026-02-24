@@ -1,0 +1,487 @@
+/* ===== HACKER TERMINAL THEME v2.0 ===== */
+/* [!] fr3akazo1d command center */
+* {
+  font-family: "JetBrainsMono Nerd Font", "FiraCode Nerd Font", "Hack Nerd Font", monospace;
+  font-size: 9pt;
+  color: #dce9ff;
+  font-weight: 500;
+}
+
+window#waybar {
+  background: transparent;
+  background-image: 
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.0) 0px,
+      rgba(0,255,247,0.03) 1px,
+      rgba(0,0,0,0.0) 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0,255,247,0.01) 0px,
+      rgba(0,0,0,0.0) 1px,
+      rgba(0,0,0,0.0) 4px
+    );
+  border: none;
+  padding: 0;
+}
+
+/* === MACBOOK NOTCH DESIGN === */
+.modules-left {
+  background: linear-gradient(180deg, 
+    rgba(10,15,25,0.92), 
+    rgba(20,28,40,0.85)
+  );
+  border: 1px solid rgba(0,255,247,0.4);
+  border-top: none;
+  border-left: none;
+  border-bottom-right-radius: 16px;
+  padding: 4px 12px 4px 8px;
+  margin-right: 8px;
+  box-shadow: 
+    inset 0 -1px 0 rgba(0,255,247,0.15),
+    0 2px 12px rgba(0,255,247,0.25);
+}
+
+.modules-center {
+  background: linear-gradient(180deg, 
+    rgba(8,12,20,0.95), 
+    rgba(15,22,35,0.92)
+  );
+  border: 1px solid rgba(0,255,247,0.5);
+  border-top: none;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  padding: 6px 16px;
+  box-shadow: 
+    inset 0 1px 0 rgba(0,255,247,0.2),
+    0 4px 20px rgba(0,255,247,0.4),
+    0 8px 32px rgba(0,255,247,0.15);
+}
+
+.modules-right {
+  background: linear-gradient(180deg, 
+    rgba(10,15,25,0.92), 
+    rgba(20,28,40,0.85)
+  );
+  border: 1px solid rgba(0,255,247,0.4);
+  border-top: none;
+  border-right: none;
+  border-bottom-left-radius: 16px;
+  padding: 4px 8px 4px 12px;
+  margin-left: 8px;
+  box-shadow: 
+    inset 0 -1px 0 rgba(0,255,247,0.15),
+    0 2px 12px rgba(0,255,247,0.25);
+}
+
+/* === TERMINAL MODULE STYLING === */
+#workspaces, #window, #tray,
+#custom-f_logo, #custom-wg,
+#network, #pulseaudio, #cpu, #memory, #temperature, #battery, #disk,
+#mpris, #clock, #clock.time, #clock.date {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 2px 6px;
+  margin: 0 6px;
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Clear separators between modules */
+#custom-vpn-ip, #network, #pulseaudio, #bluetooth, 
+#custom-notifications, #battery,
+#mpris, #cpu, #memory, #temperature {
+  border-right: 1px solid rgba(0,255,247,0.25);
+  padding-right: 8px;
+  margin-right: 8px;
+}
+
+/* No separators on last items or grouped clocks */
+#window, #disk, #tray {
+  border-right: 0px;
+}
+
+#clock.time, #clock.date {
+  border-right: 0px;
+}
+
+/* === CLOCK TERMINAL GROUPING === */
+#clock.time { 
+  margin-right: 0px;
+  border-right: 1px solid rgba(0,255,247,0.25);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  font-family: "Hack Nerd Font Mono", monospace;
+  letter-spacing: 0.5px;
+  padding-right: 8px;
+  margin-right: 0px;
+}
+#clock.date { 
+  margin-left: 0px;
+  border-left: none;
+  border-right: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  color: #93a4c3;
+  font-variant: small-caps;
+  padding-left: 8px;
+}
+
+/* === BRAND SIGNATURE === */
+#custom-f_logo {
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  font-size: 10.5pt;
+  padding: 2px 10px;
+  text-shadow:
+    0 0 4px rgba(0,255,247,0.9),
+    0 0 10px rgba(0,255,247,0.6),
+    0 0 16px rgba(255,0,60,0.4),
+    2px 0 0 rgba(0,255,247,0.1),
+    -2px 0 0 rgba(255,0,60,0.1);
+}
+
+/* === SYSTEM MONITOR MODULES (NOTCH) === */
+#cpu, #memory, #temperature {
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(0,255,247,0.2);
+  padding: 2px 8px;
+  margin: 0 4px;
+}
+
+#disk {
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  background: transparent;
+  border: none;
+  padding: 2px 8px;
+  margin: 0 4px;
+}
+
+/* === RGB SPLIT GLITCH TEXT === */
+#window, #network, #pulseaudio, #battery, #clock.time {
+  text-shadow:
+    1px 0 0 rgba(0,255,247,0.25),
+   -1px 0 0 rgba(255,0,60,0.25),
+    0 0 4px rgba(0,255,247,0.15);
+}
+
+/* === WORKSPACE BUTTONS === */
+#workspaces button {
+  background: rgba(12,18,28, 0.88);
+  color: #7a8fa8;
+  border: 1px solid rgba(0,255,247,0.25);
+  border-left: 2px solid rgba(0,255,247,0.35);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin: 0 2px;
+  font-size: 8pt;
+  font-weight: 600;
+  font-family: "Hack Nerd Font Mono", monospace;
+  transition: all 0.2s ease;
+}
+
+#workspaces button:hover { 
+  color: #dce9ff; 
+  background: rgba(15,22,32, 0.95);
+  border-color: rgba(0,255,247,0.5);
+  box-shadow: 0 0 8px rgba(0,255,247,0.4);
+}
+
+#workspaces button.active {
+  color: #00fff7; 
+  background: rgba(0,255,247,0.08);
+  border-color: rgba(0,255,247,0.6);
+  border-left: 2px solid #00fff7;
+  box-shadow: 
+    inset 0 0 8px rgba(0,255,247,0.15),
+    0 0 10px rgba(0,255,247,0.45);
+  text-shadow: 0 0 6px rgba(0,255,247,0.6);
+}
+
+#workspaces button.urgent {
+  color: #ff003c; 
+  background: rgba(255,0,60,0.08);
+  border-color: rgba(255,0,60,0.7);
+  border-left: 2px solid #ff003c;
+  box-shadow: 0 0 10px rgba(255,0,60,0.5);
+}
+
+/* === SYSTEM TRAY === */
+#tray { 
+  padding: 0 6px; 
+  background: rgba(8,12,20,0.92);
+}
+#tray * { 
+  -gtk-icon-transform: scale(0.88); 
+}
+#tray > .needs-attention { 
+  color: #ff003c;
+}
+
+/* === STATUS ALERTS === */
+#network.disconnected, #custom-wg.down, #battery.critical,
+#cpu.critical, #memory.critical, #disk.critical {
+  color: #ff003c;
+  border-color: rgba(255,0,60,0.65);
+  border-left: 2px solid #ff003c;
+  box-shadow: 
+    inset 0 0 8px rgba(255,0,60,0.15),
+    0 0 10px rgba(255,0,60,0.5), 
+    0 0 20px rgba(255,0,60,0.2);
+}
+
+/* === WARNING STATES === */
+#cpu.warning, #memory.warning, #disk.warning {
+  color: #ffaa00;
+  border-color: rgba(255,170,0,0.6);
+  border-left: 2px solid #ffaa00;
+  box-shadow: 
+    inset 0 0 6px rgba(255,170,0,0.12),
+    0 0 8px rgba(255,170,0,0.45);
+}
+
+/* === MONITOR NORMAL STATE === */
+#cpu, #memory, #disk {
+  color: #00fff7;
+  text-shadow: 
+    0 0 5px rgba(0,255,247,0.5),
+    0 0 1px rgba(0,255,247,0.8);
+}
+
+/* === TEMPERATURE DISPLAY === */
+#temperature {
+  font-weight: 700;
+  font-family: "Hack Nerd Font Mono", monospace;
+}
+
+#temperature.critical {
+  color: #ff003c;
+  border-color: rgba(255,0,60,0.75);
+  border-left: 2px solid #ff003c;
+  box-shadow: 
+    inset 0 0 8px rgba(255,0,60,0.15),
+    0 0 12px rgba(255,0,60,0.6);
+}
+
+/* === POWER/EXIT BUTTON === */
+#custom-exit {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 2px 8px;
+  font-size: 10pt;
+  margin: 0 6px;
+  color: #ff6b8a;
+  transition: all 0.1s ease;
+}
+
+#custom-exit:hover {
+  background: rgba(255,0,60,0.08);
+  border-radius: 6px;
+  color: #ff003c;
+  box-shadow: 0 0 12px rgba(255,0,60,0.5);
+}
+
+/* === BLUETOOTH === */
+#bluetooth {
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 2px 8px;
+  margin: 0 6px;
+  color: #00fff7;
+  font-weight: 600;
+}
+
+#bluetooth.off,
+#bluetooth.disabled,
+#bluetooth.no-controller {
+  color: #ff5555;
+}
+
+#bluetooth:hover {
+  background: rgba(0,255,247,0.06);
+  border-radius: 6px;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(0,255,247,0.4);
+}
+
+/* === TOOLTIP HACKER TERMINAL === */
+tooltip {
+  background: rgba(8,12,20,0.98);
+  color: #dce9ff;
+  border: 1px solid rgba(0,255,247,0.7);
+  border-left: 3px solid #00fff7;
+  border-bottom: 2px solid rgba(0,255,247,0.5);
+  border-radius: 4px;
+  box-shadow: 
+    inset 0 1px 0 rgba(0,255,247,0.2),
+    0 0 16px rgba(0,255,247,0.5), 
+    0 0 32px rgba(0,255,247,0.2);
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.5pt;
+  padding: 10px 14px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.0) 0px,
+    rgba(0,255,247,0.02) 1px,
+    rgba(0,0,0,0.0) 2px
+  );
+}
+
+tooltip * {
+  color: #dce9ff;
+}
+
+/* === VPN IP MODULE === */
+#custom-vpn-ip {
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 2px 8px;
+  margin: 0 6px;
+  color: #00fff7;
+  font-weight: 600;
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.5pt;
+  transition: all 0.1s ease;
+}
+
+#custom-vpn-ip:hover {
+  background: rgba(0,255,247,0.06);
+  border-radius: 6px;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(0,255,247,0.4);
+}
+
+/* === NOTIFICATIONS === */
+#custom-notifications {
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 2px 8px;
+  margin: 0 6px;
+  color: #00fff7;
+  font-weight: 600;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 9pt;
+  transition: all 0.1s ease;
+}
+
+#custom-notifications:hover {
+  background: rgba(0,255,247,0.06);
+  border-radius: 6px;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(0,255,247,0.4);
+}
+
+/* === ENHANCED HOVER INTERACTIONS === */
+#cpu:hover, #memory:hover, #temperature:hover, #disk:hover,
+#mpris:hover {
+  background: rgba(0,255,247,0.08);
+  border-radius: 6px;
+  box-shadow: 
+    inset 0 0 12px rgba(0,255,247,0.15),
+    0 0 16px rgba(0,255,247,0.5);
+}
+
+#network:hover, #battery:hover, #pulseaudio:hover,
+#bluetooth:hover, #custom-notifications:hover, #custom-vpn-ip:hover {
+  background: rgba(0,255,247,0.06);
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(0,255,247,0.4);
+}
+
+/* === WINDOW TITLE MODULE === */
+#window {
+  font-weight: 600;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 9pt;
+  padding: 2px 12px;
+  color: #b8c9e8;
+}
+
+#window:hover {
+  color: #00fff7;
+  text-shadow: 0 0 8px rgba(0,255,247,0.6);
+}
+
+/* === MEDIA PLAYER (NOTCH) === */
+#mpris {
+  font-weight: 700;
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8pt;
+  color: #b8c9e8;
+  padding: 2px 12px;
+  min-width: 50px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(0,255,247,0.2);
+  margin: 0 4px;
+}
+
+#mpris.playing {
+  color: #00fff7;
+  text-shadow: 0 0 8px rgba(0,255,247,0.6);
+}
+
+#mpris.paused {
+  color: #ffaa00;
+  text-shadow: 0 0 6px rgba(255,170,0,0.5);
+}
+
+#mpris.stopped {
+  color: #5a6a82;
+  font-size: 10pt;
+  letter-spacing: 0px;
+}
+
+/* === NETWORK & BATTERY === */
+#network, #battery {
+  font-weight: 600;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+}
+
+#network.disconnected {
+  font-weight: 700;
+}
+
+#battery.charging {
+  color: #00fff7;
+  box-shadow: 
+    inset 0 0 6px rgba(0,255,247,0.1),
+    0 0 8px rgba(0,255,247,0.4);
+}
+
+/* === PULSEAUDIO === */
+#pulseaudio {
+  font-weight: 600;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+}
+
+#pulseaudio.muted {
+  color: #ff6b8a;
+  border-left: 2px solid rgba(255,0,60,0.5);
+}
+
+/* [EOF] Terminal theme loaded successfully */

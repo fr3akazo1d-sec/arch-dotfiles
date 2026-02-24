@@ -1,0 +1,233 @@
+/* ---------- Tron Theme (Compact) ---------- */
+* {
+  font-family: "JetBrainsMono Nerd Font", "FiraCode Nerd Font", "Hack Nerd Font", monospace;
+  font-size: 9pt; /* ↓ was ~12.5pt */
+  color: #dce9ff;
+}
+
+window#waybar {
+  background: transparent;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.0) 0px,
+    rgba(0,255,247,0.02) 1px,
+    rgba(0,0,0,0.0) 2px
+  );
+  border: none;
+  padding: 0; /* keep tight */
+}
+
+/* Module tiles with enhanced hacker aesthetic */
+#workspaces, #window, #tray,
+#custom-f_logo, #custom-wg,
+#network, #pulseaudio, #cpu, #memory, #temperature, #battery, #disk,
+#mpris, #clock, #clock.time, #clock.date {
+  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
+  border: 1px solid rgba(0,255,247,0.35);
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
+  padding: 2px 5px;
+  margin: 0 2px;
+  transition: all 0.3s ease;
+}
+
+/* Clock grouping */
+#clock.time { 
+  margin-right: 0px;
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#clock.date { 
+  margin-left: 0px;
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  color: #93a4c3;
+}
+
+/* Brand F! with enhanced glow */
+#custom-f_logo {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-shadow:
+    0 0 3px rgba(0,255,247,0.8),
+    0 0 8px rgba(0,255,247,0.5),
+    0 0 12px rgba(255,0,60,0.35);
+}
+
+/* Monospace technical displays */
+#cpu, #memory, #temperature, #disk {
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.5pt;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+/* Subtle micro-glitch */
+#window, #network, #pulseaudio, #cpu, #memory, #temperature, #battery, #clock.time {
+  text-shadow:
+    1px 0 rgba(0,255,247,0.15),
+   -1px 0 rgba(255,0,60,0.15);
+}
+
+/* Workspaces smaller */
+#workspaces button {
+  background: rgba(20,29,43, 0.78);
+  color: #93a4c3;
+  border: 1px solid rgba(0,255,247,0.22);
+  border-radius: 5px;
+  padding: 1px 4px;                  /* ↓ */
+  margin: 0 2px;                     /* ↓ */
+  font-size: 8pt;                   /* force smaller buttons */
+}
+#workspaces button:hover { color: #dce9ff; box-shadow: 0 0 6px rgba(0,255,247,0.45); }
+#workspaces button.active {
+  color: #00fff7; border-color: rgba(0,255,247,0.5); box-shadow: 0 0 6px rgba(0,255,247,0.45);
+}
+#workspaces button.urgent {
+  color: #ff003c; border-color: rgba(255,0,60,0.6); box-shadow: 0 0 6px rgba(255,0,60,0.45);
+}
+
+/* Tray icons smaller + tighter */
+#tray { padding: 0 4px; }
+#tray * { -gtk-icon-transform: scale(0.85); } /* scales indicator icons */
+#tray > .needs-attention { color: #ff003c; }
+
+/* Status color states */
+#network.disconnected, #custom-wg.down, #battery.critical,
+#cpu.critical, #memory.critical, #disk.critical {
+  color: #ff003c;
+  border-color: rgba(255,0,60,0.55);
+  box-shadow: 0 0 8px rgba(255,0,60,0.55), 0 0 16px rgba(255,0,60,0.25);
+}
+
+#cpu.warning, #memory.warning, #disk.warning {
+  color: #ffaa00;
+  border-color: rgba(255,170,0,0.55);
+  box-shadow: 0 0 6px rgba(255,170,0,0.45);
+}
+
+/* CPU/Memory/Disk normal state with cyber glow */
+#cpu, #memory, #disk {
+  color: #00fff7;
+  text-shadow: 0 0 4px rgba(0,255,247,0.4);
+}
+
+/* Temperature color coding */
+#temperature {
+  font-weight: 600;
+}
+
+#temperature.critical {
+  color: #ff003c;
+  border-color: rgba(255,0,60,0.7);
+  box-shadow: 0 0 8px rgba(255,0,60,0.6);
+}
+
+#custom-exit {
+  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
+  border: 1px solid rgba(0,255,247,0.35);
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
+  padding: 2px 8px;
+  font-size: 11pt;
+  margin: 0 2px;
+}
+#bluetooth {
+  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
+  border: 1px solid rgba(0,255,247,0.35);
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
+  padding: 2px 8px;
+  margin: 0 2px;
+  color: #00fff7;
+  font-weight: 500;
+}
+#bluetooth.off,
+#bluetooth.disabled,
+#bluetooth.no-controller {
+  color: #ff3e3e; /* Red for off/error */
+  border-color: #ff3e3e;
+  box-shadow: 0 0 6px rgba(255,62,62,0.25), 0 0 14px rgba(255,62,62,0.10);
+}
+
+#bluetooth:hover {
+  background: linear-gradient(180deg, #0f1420 80%, #00fff7 10%);
+  color: #ffffff;
+  border-color: #00fff7;
+  box-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+tooltip {
+  background: rgba(15,20,32,0.95);
+  color: #dce9ff;
+  border: 1px solid rgba(0,255,247,0.6);
+  border-bottom: 2px solid #00fff7;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0,255,247,0.5), 0 0 24px rgba(0,255,247,0.2);
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 9pt;
+  padding: 8px 12px;
+}
+#custom-vpn-ip {
+  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
+  border: 1px solid rgba(0,255,247,0.35);
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
+  padding: 2px 8px;
+  margin: 0 2px;
+  color: #00fff7;
+  font-weight: 500;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 9pt;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+#custom-vpn-ip:hover {
+  background: linear-gradient(180deg, #0f1420 80%, #00fff7 10%);
+  color: #ffffff;
+  border-color: #00fff7;
+  box-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
+}
+
+#custom-notifications {
+  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
+  border: 1px solid rgba(0,255,247,0.35);
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
+  padding: 2px 8px;
+  margin: 0 2px;
+  color: #00fff7;
+  font-weight: 500;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 9pt;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+#custom-notifications:hover {
+  background: linear-gradient(180deg, #0f1420 80%, #00fff7 10%);
+  color: #ffffff;
+  border-color: #00fff7;
+  box-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
+}
+
+/* Enhanced hover states for system monitors */
+#cpu:hover, #memory:hover, #temperature:hover, #disk:hover {
+  background: linear-gradient(180deg, rgba(15,20,32,0.95), rgba(27,36,51,0.85));
+  border-color: rgba(0,255,247,0.7);
+  box-shadow: 0 0 10px rgba(0,255,247,0.6), 0 0 20px rgba(0,255,247,0.25);
+}
+
+#network:hover, #battery:hover {
+  background: linear-gradient(180deg, rgba(15,20,32,0.95), rgba(27,36,51,0.85));
+  border-color: rgba(0,255,247,0.7);
+  box-shadow: 0 0 10px rgba(0,255,247,0.6), 0 0 20px rgba(0,255,247,0.25);
+}
+
+#mpris:hover {
+  background: linear-gradient(180deg, rgba(15,20,32,0.95), rgba(27,36,51,0.85));
+  border-color: rgba(0,255,247,0.7);
+  box-shadow: 0 0 10px rgba(0,255,247,0.6), 0 0 20px rgba(0,255,247,0.25);
+}

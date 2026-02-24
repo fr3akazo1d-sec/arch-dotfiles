@@ -47,7 +47,6 @@ sudo reboot
 ### 🐟 Shell & Tools
 - **Fish Shell** with 90+ cybersecurity functions
 - **Starship** prompt
-- **Nix** package manager with Home Manager
 
 ### 🛡️ Cybersecurity Tools
 - Network tools (nmap, wireshark, etc.)
@@ -57,7 +56,6 @@ sudo reboot
 ### 📦 Package Management
 - **Pacman** packages (base system)
 - **AUR** packages via yay
-- **Nix** packages via Home Manager
 
 ## Key Shortcuts (After Installation)
 
@@ -90,8 +88,6 @@ reload      # Reload Fish config
 sudo pacman -Syu
 yay -Syu
 
-# Update Nix packages
-home-manager switch
 ```
 
 ## Troubleshooting

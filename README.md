@@ -20,7 +20,6 @@ A complete Arch Linux desktop environment with Hyprland + comprehensive cybersec
 ### 🐟 Shell & Terminal
 - **Fish Shell** with 90+ cybersecurity functions
 - **Starship** prompt with custom cybersec theme
-- **Nix** package manager with Home Manager
 - Comprehensive aliases and shortcuts
 
 ### 🛡️ Cybersecurity Arsenal
@@ -57,11 +56,10 @@ The script will:
 1. ✅ Update your system
 2. ✅ Install all desktop components (Hyprland, Waybar, etc.)
 3. ✅ Setup Fish shell with cybersecurity functions
-4. ✅ Install Nix package manager
-5. ✅ Copy all configuration files
-6. ✅ Create cybersecurity workspace
-7. ✅ Enable system services
-8. ✅ Backup your existing configs
+4. ✅ Copy all configuration files
+5. ✅ Create cybersecurity workspace
+6. ✅ Enable system services
+7. ✅ Backup your existing configs
 
 ## 📁 Repository Structure
 
@@ -83,7 +81,6 @@ arch-dotfiles/
 │   ├── 🖥️ ghostty/               # Terminal config
 │   ├── 🐟 fish/                   # Fish shell config
 │   │   └── config.fish            # 90+ cybersec functions
-│   ├── 🏠 home-manager/           # Nix Home Manager
 │   └── ⭐ starship.toml           # Prompt config
 ├── 🖼️ wallpapers/                 # Custom wallpapers
 ├── 📝 scripts/                    # Utility scripts
@@ -189,20 +186,6 @@ cyberget      # Install additional tools as needed
 
 ## 📦 Package Management
 
-### Nix Integration
-The setup includes **Nix** with **Home Manager** for declarative package management:
-
-```bash
-# Install packages declaratively
-home-manager edit
-home-manager switch
-
-# Or use Fish functions
-nixadd package-name      # Add package to configuration
-nixremove package-name   # Remove package
-nixcleanup              # Clean old generations
-```
-
 ### AUR Packages
 Several AUR packages are automatically installed:
 - `ghostty-git` - Modern terminal
@@ -223,8 +206,6 @@ yay -Syu
 # Update dotfiles
 ~/update-dotfiles.sh
 
-# Update Nix packages
-home-manager switch
 ```
 
 ### Backup Your Configs

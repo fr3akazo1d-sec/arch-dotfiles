@@ -1,13 +1,13 @@
 configuration {
-    font: "Envy Code R 10";
-    line-margin: 10;
+    /* Font is set by the theme (JetBrainsMono Nerd Font) */
 
-    display-ssh:    "";
-    display-run:    "";
-    display-drun:   "";
-    display-window: "";
-    display-combi:  "";
+    display-ssh:    " SSH";
+    display-run:    " RUN";
+    display-drun:   " APP";
+    display-window: " WIN";
+    display-combi:  " ALL";
     show-icons:     true;
+    icon-theme:     "Papirus-Dark";
 }
 
 
@@ -21,4 +21,3 @@ listview {
 window {
 	width: 30%;
 }
-

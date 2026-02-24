@@ -43,8 +43,10 @@
     "inhibitors",
     "dnd",
     "mpris",
+    "buttons-grid",
     "notifications"
   ],
+
   "widget-config": {
     "inhibitors": {
       "text": "Inhibitors",
@@ -66,6 +68,39 @@
     "mpris": {
       "image-size": 96,
       "blur": true
+    },
+    "buttons-grid": {
+      "actions": [
+        {
+          "label": "Start Work",
+          "command": "bash ~/.config/waybar/scripts/pomodoro.sh start"
+        },
+        {
+          "label": "Pause",
+          "command": "bash ~/.config/waybar/scripts/pomodoro.sh toggle"
+        },
+        {
+          "label": "Stop",
+          "command": "bash ~/.config/waybar/scripts/pomodoro.sh stop"
+        },
+        {
+          "label": "Reset",
+          "command": "bash ~/.config/waybar/scripts/pomodoro.sh reset"
+        }
+      ]
+    }
+  },
+
+  "applications": {
+    "Webex": {
+      "skip_groups": true,
+      "skip_popup": true,
+      "skip_sound": false
+    },
+    "CiscoCollabHost": {
+      "skip_groups": true,
+      "skip_popup": true,
+      "skip_sound": false
     }
   }
 }

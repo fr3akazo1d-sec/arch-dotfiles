@@ -31,7 +31,7 @@ print_header() {
     echo -e "${CYAN}"
     echo "╔══════════════════════════════════════════════════════════════════╗"
     echo "║         🐧 Complete Arch Linux Desktop + Cybersec Setup 🔒      ║"
-    echo "║      Hyprland + Waybar + Rofi + Wezterm + Fish + Nix + Tools    ║"
+    echo "║         Hyprland + Waybar + Rofi + Wezterm + Fish + Tools        ║"
     echo "╚══════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
 }
@@ -226,7 +226,6 @@ install_base_packages() {
         "waybar"
         "rofi-wayland"
         "swaync"
-        "swaylock-effects"
         "swayidle"
         "wl-clipboard"
         "grim"
@@ -255,8 +254,6 @@ install_base_packages() {
         "mesa-utils"
         "vulkan-tools"
         "libgl"
-        "lib32-mesa"
-        "xf86-video-intel"
         "xf86-video-amdgpu"
         "xf86-video-nouveau"
         
@@ -288,7 +285,6 @@ install_base_packages() {
         "neofetch"
         "tree"
         "fzf"
-        "kitty"                # Backup terminal (always available)
         "bat"
         "exa"
         "ripgrep"
@@ -304,21 +300,23 @@ install_base_packages() {
         # Media
         "mpv"
         "imv"
-        
-        # Development
-        "code"
-        
+
+        # Polkit (privilege escalation daemon + KDE agent)
+        "polkit"
+        "polkit-kde-agent"
+
+        # File manager (used in keybindings)
+        "nemo"
+
         # Cybersecurity tools
         "nmap"
         "wireshark-qt"
         "tcpdump"
         "lsof"
-        "burpsuite"
         
         # System utilities
         "brightnessctl"
         "playerctl"
-        "polkit-kde-agent"
     )
     
     for package in "${packages[@]}"; do
@@ -398,10 +396,8 @@ install_aur_packages() {
     # AUR packages (try Chaotic-AUR first, then compile if needed)
     local aur_packages=(
         "wezterm-git"           # Terminal (latest version with all fixes)
-        "kitty"                 # Fallback terminal (reliable, fast)
         "hyprpicker"            # Color picker
         "wlogout"              # Logout menu
-        "waybar-hyprland-git"  # Enhanced waybar
         "rofi-calc"            # Calculator for rofi
         "rofi-emoji"           # Emoji picker
         "rofi-power-menu"      # Power menu for rofi
@@ -409,7 +405,9 @@ install_aur_packages() {
         "discord"
         "spotify"
         "vivaldi"
-        "bibata-cursor-theme-bin"  # Enhanced cursor theme
+        "swaylock-effects"         # Enhanced swaylock (AUR only)
+        "burpsuite"                # Web app security testing
+        "hyprshot"                 # Screenshot tool (used in keybindings)
         "qt5ct"                    # Qt5 configuration tool
     )
     
@@ -579,30 +577,6 @@ setup_fish_shell() {
     fi
 }
 
-# Install Nix and Home Manager
-setup_nix() {
-    step "Installing Nix package manager and Home Manager"
-    
-    if ! command -v nix &> /dev/null; then
-        info "Installing Nix..."
-        curl -L https://nixos.org/nix/install | sh
-        . ~/.nix-profile/etc/profile.d/nix.sh
-    fi
-    
-    # Setup Home Manager
-    if ! command -v home-manager &> /dev/null; then
-        info "Setting up Home Manager..."
-        nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
-        nix-channel --update
-        nix-shell '<home-manager>' -A install
-        
-        # Copy Home Manager configuration
-        mkdir -p ~/.config/home-manager
-        cp "$DOTFILES_DIR/config/home-manager/home.nix" ~/.config/home-manager/ 2>/dev/null || true
-    fi
-    
-    log "Nix and Home Manager setup completed"
-}
 
 # Create Cyber-Sec directory structure
 create_cybersec_structure() {
@@ -627,8 +601,8 @@ enable_services() {
     sudo systemctl enable bluetooth
     sudo systemctl start bluetooth
     
-    # Enable audio
-    systemctl --user enable pipewire pipewire-pulse wireplumber
+    # Enable audio (start happens automatically on first user login)
+    systemctl --user enable pipewire pipewire-pulse wireplumber 2>/dev/null || true
     
     log "System services enabled"
 }
@@ -660,7 +634,7 @@ setup_dev_environment() {
     # Install common Python packages
     if command -v pip &> /dev/null; then
         info "Installing Python packages..."
-        pip install --user --upgrade pip requests beautifulsoup4 pwntools
+        pip install --user --break-system-packages --upgrade pip requests beautifulsoup4 pwntools
     fi
     
     # Setup Git (if not configured)
@@ -681,11 +655,6 @@ setup_dev_environment() {
 final_setup() {
     step "Performing final setup"
     
-    # Apply Home Manager configuration
-    if command -v home-manager &> /dev/null; then
-        info "Applying Home Manager configuration..."
-        home-manager switch || warn "Home Manager configuration failed"
-    fi
     
     # Create update script
     cat > ~/update-dotfiles.sh << 'EOF'
@@ -704,11 +673,6 @@ cp -r config/wezterm/* ~/.config/wezterm/
 if [[ -f config/starship.toml ]]; then
     cp config/starship.toml ~/.config/
 fi
-# Copy home-manager config
-if [[ -f config/home-manager/home.nix ]]; then
-    mkdir -p ~/.config/home-manager
-    cp config/home-manager/home.nix ~/.config/home-manager/
-fi
 echo "✅ Dotfiles updated!"
 echo "🔄 Restart Hyprland or reload configurations to apply changes"
 EOF
@@ -716,7 +680,7 @@ EOF
     
     # Clean package cache
     sudo pacman -Sc --noconfirm
-    paru -Sc --noconfirm
+    command -v paru &>/dev/null && paru -Sc --noconfirm || true
     
     log "Final setup completed"
 }
@@ -736,7 +700,6 @@ print_completion() {
     echo -e "  ${DESKTOP} Waybar, Rofi, SwayNC, Wezterm terminal"
     echo -e "  ${FISH} Fish shell with 90+ cybersecurity functions"
     echo -e "  ${SHIELD} Complete cybersecurity toolkit with Athena OS tools"
-    echo -e "  ${GEAR} Nix package manager with Home Manager"
     echo -e "  ${ROCKET} Chaotic-AUR + Athena OS repositories for enhanced packages"
     
     echo -e "\n${YELLOW}Next steps:${NC}"
@@ -773,53 +736,14 @@ print_completion() {
     echo -e "${CYAN}Repository: https://github.com/fr3akazo1d-sec/arch-dotfiles${NC}"
 }
 
-# Main execution
-
-# Print completion message
-print_completion() {
-    echo -e "\n${GREEN}"
-    echo "╔══════════════════════════════════════════════════════════════════╗"
-    echo "║                    🎉 SETUP COMPLETED! 🎉                       ║"
-    echo "╚══════════════════════════════════════════════════════════════════╝"
-    echo -e "${NC}"
-    
-    echo -e "${CYAN}${ROCKET} Your complete Arch Linux environment is ready!${NC}\n"
-    
-    echo -e "${YELLOW}What was installed:${NC}"
-    echo -e "  ${HYPR} Hyprland with complete Wayland setup"
-    echo -e "  ${DESKTOP} Waybar, Rofi, SwayNC, Wezterm terminal"
-    echo -e "  ${FISH} Fish shell with 90+ cybersecurity functions"
-    echo -e "  ${SHIELD} Complete cybersecurity toolkit"
-    echo -e "  ${GEAR} Nix package manager with Home Manager"
-    
-    echo -e "\n${YELLOW}Next steps:${NC}"
-    echo -e "  1. ${BLUE}Reboot your system${NC}"
-    echo -e "  2. ${BLUE}Login and select 'Hyprland' session${NC}"
-    echo -e "  3. ${BLUE}Press Super+Return${NC} to open Wezterm terminal"
-    echo -e "  4. ${BLUE}Run 'fish'${NC} to start Fish shell"
-    echo -e "  5. ${BLUE}Run 'showall'${NC} to see all available functions"
-    
-    echo -e "\n${GREEN}Key shortcuts (after reboot):${NC}"
-    echo -e "  ${CYAN}Super + Return${NC}        - Open terminal (Wezterm)"
-    echo -e "  ${CYAN}Super + D${NC}             - Application launcher (Rofi)"
-    echo -e "  ${CYAN}Super + Q${NC}             - Close window"
-    echo -e "  ${CYAN}Super + M${NC}             - Exit Hyprland"
-    echo -e "  ${CYAN}Super + V${NC}             - Toggle floating"
-    echo -e "  ${CYAN}Super + F${NC}             - Toggle fullscreen"
-    echo -e "  ${CYAN}Super + 1-9${NC}           - Switch workspaces"
-    
-    echo -e "\n${PURPLE}Useful commands:${NC}"
-    echo -e "  ${CYAN}~/update-dotfiles.sh${NC}     - Update configurations"
-    echo -e "  ${CYAN}cyberlist${NC}                - Browse security tools"
-    echo -e "  ${CYAN}myips${NC}                    - Show network interfaces"
-    echo -e "  ${CYAN}htb / thm / hs${NC}           - Quick access to learning platforms"
-    
-    echo -e "\n${GREEN}Happy hacking with your new desktop! 🏴‍☠️${NC}"
-}
 
 # Main execution
 main() {
     print_header
+
+    # Run these first before asking anything
+    check_root
+    check_distro
     
     info "This will install a complete Arch Linux desktop environment with:"
     info "• Hyprland (Wayland compositor)"
@@ -828,7 +752,6 @@ main() {
     info "• Wezterm (Terminal)"
     info "• SwayNC (Notification center)"
     info "• Fish shell + cybersecurity tools"
-    info "• Nix package manager"
     info "• Complete dotfiles configuration"
     
     read -p "Continue with the complete setup? (y/N): " -n 1 -r
@@ -837,8 +760,6 @@ main() {
         error "Setup cancelled by user"
     fi
     
-    check_root
-    check_distro
     setup_chaotic_aur
     setup_athena_repo
     install_base_packages
@@ -849,7 +770,6 @@ main() {
     install_dotfiles
     setup_gtk_themes
     setup_fish_shell
-    setup_nix
     create_cybersec_structure
     enable_services
     create_session_entry

@@ -1,168 +1,393 @@
-/* ---------- Tron Theme (Compact) ---------- */
+/* ===== TRON // NEON OPS BAR v3.0 ===== */
+/* [!] fr3akazo1d // command center */
+
 * {
   font-family: "JetBrainsMono Nerd Font", "FiraCode Nerd Font", "Hack Nerd Font", monospace;
-  font-size: 9pt; /* ↓ was ~12.5pt */
-  color: #dce9ff;
+  font-size: 8.6pt;
+  color: #d6f9ff;
+  font-weight: 600;
+  letter-spacing: 0.15px;
 }
 
 window#waybar {
   background: transparent;
+  background-image:
+    radial-gradient(120% 120% at 50% -20%, rgba(0,234,255,0.24), transparent),
+    linear-gradient(180deg, rgba(5,7,15,0.92), rgba(5,7,15,0.82)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0,234,255,0.06) 0px,
+      rgba(0,234,255,0.0) 1px,
+      rgba(0,234,255,0.0) 6px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,234,255,0.06) 0px,
+      rgba(0,234,255,0.0) 1px,
+      rgba(0,234,255,0.0) 6px
+    );
+  padding: 2px 6px 0 6px;
+  border: none;
+}
+
+/* === PANELS (left/center/right) === */
+.modules-left, .modules-center, .modules-right {
+  background-image:
+    linear-gradient(135deg, rgba(12,20,36,0.9), rgba(10,18,30,0.72)),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,234,255,0.03) 0px,
+      rgba(0,234,255,0.0) 2px,
+      rgba(0,234,255,0.0) 4px
+    );
+  border: 1px solid rgba(0,234,255,0.35);
+  border-top: 1px solid rgba(0,234,255,0.55);
+  border-radius: 10px;
+  padding: 4px 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -1px 0 rgba(0,234,255,0.12),
+    0 8px 26px rgba(0,234,255,0.18),
+    0 0 18px rgba(255,43,211,0.14);
+}
+
+.modules-left { margin-right: 8px; border-radius: 10px; }
+.modules-right { margin-left: 8px; border-radius: 10px; }
+.modules-center { 
+  border-radius: 12px; 
+  padding: 6px 12px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -1px 0 rgba(0,234,255,0.12);
+}
+
+/* === MODULE BASE === */
+#workspaces, #tray,
+#custom-f_logo, #custom-wg,
+#network, #pulseaudio, #cpu, #memory, #temperature, #battery, #disk,
+#mpris, #clock,
+#custom-vpn-netbird, #custom-vpn-wireguard, #custom-vpn-openvpn, #custom-notifications, #custom-pomodoro, #bluetooth, #custom-exit {
+  background: rgba(12,21,36,0.72);
+  border: 1px solid rgba(0,234,255,0.18);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255,43,211,0.05);
+  padding: 2px 6px;
+  margin: 0 4px;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Thin dividers for grouped modules */
+#custom-vpn-netbird, #custom-vpn-wireguard, #custom-vpn-openvpn, #network, #pulseaudio, #bluetooth,
+#custom-notifications, #battery, #mpris, #cpu, #memory, #temperature {
+  border-right: 1px solid rgba(0,234,255,0.25);
+  margin-right: 6px;
+  padding-right: 6px;
+}
+
+#disk, #tray, #custom-exit { border-right: 0; }
+
+/* === CLOCK PILL === */
+#clock {
+  background: rgba(12,21,36,0.82);
+  border: 1px solid rgba(0,234,255,0.3);
+  box-shadow: 0 6px 14px rgba(0,234,255,0.18);
+  border-radius: 10px;
+  padding: 2px 12px;
+  margin: 0;
+  letter-spacing: 0.4px;
+  text-shadow: 0 0 8px rgba(0,234,255,0.35);
+}
+
+/* === BRAND SIGNATURE === */
+#custom-f_logo {
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  font-size: 10.5pt;
+  padding: 2px 12px;
+  background: linear-gradient(120deg, rgba(0,234,255,0.24), rgba(255,43,211,0.16));
+  box-shadow:
+    0 0 10px rgba(0,234,255,0.45),
+    0 0 18px rgba(255,43,211,0.22),
+    inset 0 0 12px rgba(0,234,255,0.18);
+  text-shadow:
+    1px 0 0 rgba(0,234,255,0.45),
+   -1px 0 0 rgba(255,43,211,0.45),
+    0 0 12px rgba(0,234,255,0.65);
+}
+
+/* === MONITOR MODULES === */
+#cpu, #memory, #temperature, #disk {
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.6pt;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  background: linear-gradient(180deg, rgba(15,26,44,0.8), rgba(12,22,36,0.7));
+}
+
+
+
+#cpu, #memory, #disk { color: #00eaff; }
+#temperature { color: #ffc86b; }
+
+/* State colors */
+#network.disconnected, #custom-wg.down, #battery.critical,
+#cpu.critical, #memory.critical, #disk.critical, #temperature.critical {
+  color: #ff3b6a;
+  border-color: rgba(255,59,106,0.65);
+  box-shadow: inset 0 0 8px rgba(255,59,106,0.16), 0 0 16px rgba(255,59,106,0.4);
+}
+
+#cpu.warning, #memory.warning, #disk.warning, #battery.warning {
+  color: #ffc76b;
+  border-color: rgba(255,199,107,0.6);
+  box-shadow: inset 0 0 6px rgba(255,199,107,0.18), 0 0 10px rgba(255,199,107,0.35);
+}
+
+#battery.charging {
+  color: #7afc8f;
+  box-shadow: inset 0 0 8px rgba(122,252,143,0.12), 0 0 12px rgba(122,252,143,0.35);
+  /* animation: charge-pulse 1.4s ease-in-out infinite; */
+}
+
+/* === TEXT GLITCH / RGB SPLIT === */
+#window, #network, #pulseaudio, #battery, #clock.time {
+  text-shadow:
+    1px 0 0 rgba(0,234,255,0.35),
+   -1px 0 0 rgba(255,43,211,0.3),
+    0 0 6px rgba(0,234,255,0.2);
+}
+
+/* === WORKSPACES === */
+#workspaces {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0 4px;
+}
+
+#workspaces button {
+  background: linear-gradient(135deg, rgba(0,234,255,0.12), rgba(255,43,211,0.08));
+  color: #90aac1;
+  border: 1px solid rgba(0,234,255,0.3);
+  border-radius: 6px;
+  padding: 1px 6px;
+  margin: 0 2px;
+  font-size: 8.2pt;
+  font-weight: 700;
+  font-family: "Hack Nerd Font Mono", monospace;
+  box-shadow: inset 0 0 0 1px rgba(255,43,211,0.08);
+  transition: all 0.18s ease;
+}
+
+#workspaces button:hover {
+  color: #d6f9ff;
+  border-color: rgba(0,234,255,0.55);
+  box-shadow: 0 0 10px rgba(0,234,255,0.35), inset 0 0 10px rgba(0,234,255,0.15);
+}
+
+#workspaces button.active {
+  color: #00eaff;
+  background: linear-gradient(135deg, rgba(0,234,255,0.22), rgba(0,234,255,0.08));
+  border-color: rgba(0,234,255,0.6);
+  box-shadow:
+    inset 0 0 10px rgba(0,234,255,0.24),
+    0 0 12px rgba(0,234,255,0.4),
+    0 0 18px rgba(255,43,211,0.18);
+  text-shadow: 0 0 10px rgba(0,234,255,0.55);
+  /* animation: workspace-pulse 1.6s ease-in-out infinite; */
+}
+
+#workspaces button.urgent {
+  color: #ff3b6a;
+  background: rgba(255,59,106,0.08);
+  border-color: rgba(255,59,106,0.65);
+  box-shadow: 0 0 12px rgba(255,59,106,0.35);
+}
+
+/* === SYSTEM TRAY === */
+#tray {
+  padding: 0 6px;
+  background: rgba(10,18,32,0.85);
+  border: 1px solid rgba(0,234,255,0.2);
+}
+
+#tray * { -gtk-icon-transform: scale(0.84); }
+#tray *:hover {
+  box-shadow: 0 0 0 1px rgba(0,234,255,0.6);
+  border-radius: 6px;
+}
+#tray > .needs-attention { color: #ff3b6a; }
+
+/* === HOVER GLOW === */
+#cpu:hover, #memory:hover, #temperature:hover, #disk:hover, #mpris:hover,
+#network:hover, #battery:hover, #pulseaudio:hover, #bluetooth:hover,
+#custom-notifications:hover, #custom-vpn-netbird:hover, #custom-vpn-wireguard:hover, #custom-vpn-openvpn:hover, #window:hover, #custom-exit:hover, #custom-pomodoro:hover {
+  background: linear-gradient(135deg, rgba(0,234,255,0.16), rgba(255,43,211,0.1));
+  border-color: rgba(0,234,255,0.55);
+  box-shadow:
+    inset 0 0 14px rgba(0,234,255,0.18),
+    0 0 14px rgba(0,234,255,0.35),
+    0 0 18px rgba(255,43,211,0.22);
+  color: #d6f9ff;
+}
+
+#custom-notifications:hover, #custom-pomodoro:hover {
+  border-color: rgba(255,43,211,0.6);
+  box-shadow:
+    inset 0 0 12px rgba(255,43,211,0.18),
+    0 0 14px rgba(255,43,211,0.28),
+    0 0 18px rgba(0,234,255,0.18);
+}
+
+/* === WINDOW TITLE === */
+#window {
+  font-weight: 700;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 9pt;
+  color: #b8d6ec;
+  background: transparent;
+  border: none;
+  padding: 2px 10px;
+  margin: 0;
+  box-shadow: none;
+}
+
+/* === MEDIA PLAYER === */
+#mpris {
+  font-weight: 700;
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.3pt;
+  color: #b8c9e8;
+  padding: 2px 10px;
+  min-width: 42px;
+  background: linear-gradient(180deg, rgba(15,24,38,0.85), rgba(12,20,32,0.72));
+  opacity: 0.2;
+}
+
+#mpris.playing { color: #00eaff; text-shadow: 0 0 10px rgba(0,234,255,0.6); }
+#mpris.paused { color: #ffc86b; text-shadow: 0 0 8px rgba(255,200,107,0.45); }
+#mpris.stopped { color: #64748b; font-size: 9.5pt; letter-spacing: 0px; }
+
+#mpris.stopped {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+  opacity: 0;
+}
+
+#mpris.playing { opacity: 1; }
+#mpris.paused { opacity: 0.35; }
+
+/* === NETWORK / BATTERY / AUDIO === */
+#network, #battery, #pulseaudio { font-weight: 600; font-family: "JetBrainsMono Nerd Font", monospace; }
+#network.disconnected { font-weight: 700; }
+#pulseaudio.muted { color: #ff6b8a; border-left: 2px solid rgba(255,107,138,0.5); }
+
+/* Right-side subtle separators */
+.modules-right > box > * {
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-image: radial-gradient(circle at left center, rgba(0,234,255,0.28) 0, rgba(0,234,255,0.28) 1px, rgba(0,234,255,0) 3px);
+  padding-left: 8px;
+}
+
+.modules-right > box > *:first-child {
+  background-image: none;
+  padding-left: 0;
+}
+
+/* === BLUETOOTH === */
+#bluetooth { color: #00eaff; font-weight: 600; }
+#bluetooth.off, #bluetooth.disabled, #bluetooth.no-controller { color: #ff5555; }
+
+/* === VPN MODULES === */
+#custom-vpn-netbird, #custom-vpn-wireguard, #custom-vpn-openvpn {
+  color: #00eaff;
+  font-weight: 600;
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.5pt;
+}
+
+#custom-vpn-netbird.connected { color: #00ff41; text-shadow: 0 0 8px rgba(0,255,65,0.6); }
+#custom-vpn-wireguard.connected { color: #00eaff; text-shadow: 0 0 8px rgba(0,234,255,0.6); }
+#custom-vpn-openvpn.connected { color: #ff2bd3; text-shadow: 0 0 8px rgba(255,43,211,0.6); }
+
+#custom-vpn-netbird.disconnected,
+#custom-vpn-wireguard.disconnected,
+#custom-vpn-openvpn.disconnected {
+  color: transparent;
+  font-size: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+/* === NOTIFICATIONS === */
+#custom-notifications { color: #00eaff; font-weight: 600; font-family: "JetBrainsMono Nerd Font", monospace; font-size: 9pt; }
+#custom-notifications.dnd { color: #ffc76b; }
+#custom-notifications.dnd-notification { color: #ffc76b; }
+#custom-notifications.notification { color: #ff2bd3; text-shadow: 0 0 8px rgba(255,43,211,0.6); }
+
+/* === POWER / EXIT === */
+#custom-exit {
+  padding: 3px 10px;
+  font-size: 10pt;
+  color: #ff6b8a;
+  background: linear-gradient(135deg, rgba(255,43,211,0.12), rgba(0,234,255,0.08));
+  border-color: rgba(255,43,211,0.25);
+}
+
+#custom-exit:hover { color: #ff3b6a; }
+
+/* === TOOLTIP === */
+tooltip {
+  background: rgba(7,12,22,0.96);
+  color: #d6f9ff;
+  border: 1px solid rgba(0,234,255,0.55);
+  border-left: 3px solid #ff2bd3;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 0 18px rgba(0,234,255,0.45),
+    0 0 28px rgba(255,43,211,0.22);
+  font-family: "Hack Nerd Font Mono", "JetBrainsMono Nerd Font", monospace;
+  font-size: 8.5pt;
+  padding: 10px 14px;
   background-image: repeating-linear-gradient(
     to bottom,
-    rgba(0,0,0,0.0) 0px,
-    rgba(0,255,247,0.02) 1px,
-    rgba(0,0,0,0.0) 2px
+    rgba(0,234,255,0.04) 0px,
+    rgba(0,234,255,0.0) 1px,
+    rgba(0,234,255,0.0) 3px
   );
-  border: none;
-  padding: 0; /* keep tight */
 }
 
-/* Module tiles smaller */
-#workspaces, #window, #tray,
-#custom-f_logo, #custom-wg,
-#network, #pulseaudio, #cpu, #memory, #temperature, #battery,
-#clock, #clock.time, #clock.utc {
-  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
-  border: 1px solid rgba(0,255,247,0.35);
-  border-radius: 6px;                /* ↓ from 8 */
-  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
-  padding: 2px 5px;                  /* ↓ from 6 10 */
-  margin: 0 2px;                     /* ↓ from 0 5 */
+tooltip * { color: #d6f9ff; }
+
+/* === MISC LAYOUT === */
+#tray { margin-right: 4px; }
+#clock.time { margin-right: 0; }
+#clock.date { margin-left: 0; }
+#custom-f_logo { margin-left: 2px; }
+
+/* Subtle sweep animation for active elements */
+@keyframes tron-sweep {
+  from { box-shadow: inset 0 0 0 1px rgba(0,234,255,0.1); }
+  to { box-shadow: inset 0 0 0 1px rgba(255,43,211,0.25); }
 }
 
-/* Clock grouping */
-#clock.time { margin-right: 2px; }
-#clock.utc  { margin-left: 2px; color: #93a4c3; }
+/* #workspaces button.active, #custom-f_logo, #mpris.playing { animation: tron-sweep 1.8s ease-in-out infinite alternate; } */
 
-/* Brand F! */
-#custom-f_logo {
-  font-weight: 800;
-  letter-spacing: 0.3px;             /* ↓ tighter */
-  text-shadow:
-    0 0 2px rgba(0,255,247,0.6),
-    0 0 6px rgba(0,255,247,0.3),
-    0 0 8px rgba(255,0,60,0.25);
+@keyframes workspace-pulse {
+  0% { box-shadow: inset 0 0 10px rgba(0,234,255,0.2), 0 0 10px rgba(0,234,255,0.35); }
+  50% { box-shadow: inset 0 0 14px rgba(0,234,255,0.35), 0 0 16px rgba(0,234,255,0.5); }
+  100% { box-shadow: inset 0 0 10px rgba(0,234,255,0.2), 0 0 10px rgba(0,234,255,0.35); }
 }
 
-/* Subtle micro-glitch */
-#window, #network, #pulseaudio, #cpu, #memory, #temperature, #battery, #clock.time {
-  text-shadow:
-    1px 0 rgba(0,255,247,0.15),
-   -1px 0 rgba(255,0,60,0.15);
+@keyframes charge-pulse {
+  0% { box-shadow: inset 0 0 8px rgba(122,252,143,0.12), 0 0 10px rgba(122,252,143,0.3); }
+  50% { box-shadow: inset 0 0 12px rgba(122,252,143,0.2), 0 0 16px rgba(122,252,143,0.45); }
+  100% { box-shadow: inset 0 0 8px rgba(122,252,143,0.12), 0 0 10px rgba(122,252,143,0.3); }
 }
 
-/* Workspaces smaller */
-#workspaces button {
-  background: rgba(20,29,43, 0.78);
-  color: #93a4c3;
-  border: 1px solid rgba(0,255,247,0.22);
-  border-radius: 5px;
-  padding: 1px 4px;                  /* ↓ */
-  margin: 0 2px;                     /* ↓ */
-  font-size: 8pt;                   /* force smaller buttons */
-}
-#workspaces button:hover { color: #dce9ff; box-shadow: 0 0 6px rgba(0,255,247,0.45); }
-#workspaces button.active {
-  color: #00fff7; border-color: rgba(0,255,247,0.5); box-shadow: 0 0 6px rgba(0,255,247,0.45);
-}
-#workspaces button.urgent {
-  color: #ff003c; border-color: rgba(255,0,60,0.6); box-shadow: 0 0 6px rgba(255,0,60,0.45);
-}
-
-/* Tray icons smaller + tighter */
-#tray { padding: 0 4px; }
-#tray * { -gtk-icon-transform: scale(0.85); } /* scales indicator icons */
-#tray > .needs-attention { color: #ff003c; }
-
-/* Status color states */
-#network.disconnected, #custom-wg.down, #battery.critical {
-  color: #ff003c;
-  border-color: rgba(255,0,60,0.55);
-  box-shadow: 0 0 6px rgba(255,0,60,0.45);
-}
-
-#custom-exit {
-  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
-  border: 1px solid rgba(0,255,247,0.35);
-  border-radius: 6px;
-  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
-  padding: 2px 8px;
-  font-size: 11pt;
-  margin: 0 2px;
-}
-#bluetooth {
-  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
-  border: 1px solid rgba(0,255,247,0.35);
-  border-radius: 6px;
-  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
-  padding: 2px 8px;
-  margin: 0 2px;
-  color: #00fff7;
-  font-weight: 500;
-}
-#bluetooth.off,
-#bluetooth.disabled,
-#bluetooth.no-controller {
-  color: #ff3e3e; /* Red for off/error */
-  border-color: #ff3e3e;
-  box-shadow: 0 0 6px rgba(255,62,62,0.25), 0 0 14px rgba(255,62,62,0.10);
-}
-
-#bluetooth:hover {
-  background: linear-gradient(180deg, #0f1420 80%, #00fff7 10%);
-  color: #ffffff;
-  border-color: #00fff7;
-  box-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-}
-
-tooltip {
-  background: linear-gradient(180deg, #141d2b 80%, #00fff7 10%);
-  color: #dce9ff;
-  border: 1px solid #00fff7;
-  border-radius: 8px;
-  box-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
-  font-family: "JetBrainsMono Nerd Font", monospace;
-  font-size: 9pt;
-}
-#custom-vpn-ip {
-  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
-  border: 1px solid rgba(0,255,247,0.35);
-  border-radius: 6px;
-  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
-  padding: 2px 8px;
-  margin: 0 2px;
-  color: #00fff7;
-  font-weight: 500;
-  font-family: "JetBrainsMono Nerd Font", monospace;
-  font-size: 9pt;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-}
-
-#custom-vpn-ip:hover {
-  background: linear-gradient(180deg, #0f1420 80%, #00fff7 10%);
-  color: #ffffff;
-  border-color: #00fff7;
-  box-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
-}
-
-#custom-notifications {
-  background: linear-gradient(180deg, rgba(15,20,32,0.88), rgba(27,36,51,0.78));
-  border: 1px solid rgba(0,255,247,0.35);
-  border-radius: 6px;
-  box-shadow: 0 0 6px rgba(0,255,247,0.45), 0 0 14px rgba(0,255,247,0.18);
-  padding: 2px 8px;
-  margin: 0 2px;
-  color: #00fff7;
-  font-weight: 500;
-  font-family: "JetBrainsMono Nerd Font", monospace;
-  font-size: 9pt;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-}
-
-#custom-notifications:hover {
-  background: linear-gradient(180deg, #0f1420 80%, #00fff7 10%);
-  color: #ffffff;
-  border-color: #00fff7;
-  box-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
-}
+/* [EOF] TRON neon ops bar */

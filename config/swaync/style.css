@@ -135,4 +135,35 @@
 .widget-mpris {
   background-color: #141d2b;
   color: #dce9ff;
+}/* Pomodoro Timer Buttons */
+.buttons-grid {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: rgba(0, 255, 247, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 247, 0.2);
+}
+
+.buttons-grid > flowbox > flowboxchild > button {
+  background-color: rgba(0, 255, 247, 0.1);
+  border: 1px solid #00fff7;
+  border-radius: 6px;
+  color: #dce9ff;
+  font-size: 9pt;
+  font-weight: bold;
+  padding: 10px 15px;
+  margin: 3px;
+  min-width: 100px;
+  transition: all 0.2s ease;
+}
+
+.buttons-grid > flowbox > flowboxchild > button:hover {
+  background-color: rgba(0, 255, 247, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 247, 0.4);
+  border-color: #00fff7;
+}
+
+.buttons-grid > flowbox > flowboxchild > button:active {
+  background-color: rgba(255, 0, 60, 0.2);
+  border-color: #ff003c;
 }

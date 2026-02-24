@@ -11,6 +11,13 @@
   tron-red:             #ff003c;
   tron-fg:              #dce9ff;
   tron-fg-dim:          #93a4c3;
+  tron-glow:            rgba(0,255,247,0.28);
+  tron-red-glow:        rgba(255,0,60,0.22);
+  tron-dark-glow:       rgba(9,12,18,0.72);
+  tron-border-soft:     #0b101a;
+  tron-border-strong:   #162032;
+  tron-logo:            "❯";
+  tron-scanline:        rgba(0,255,247,0.025);
 
   /* Sizing */
   radius:               6px;
@@ -56,6 +63,8 @@ mainbox {
   spacing: 0;
   children: [ inputbar, message, listview ];
   background-color: @semi;
+  border: 1px;
+  border-color: @tron-border-soft;
   border-radius: @radius;
   margin: 0px;
   padding: 0px;
@@ -80,22 +89,34 @@ inputbar {
   border-color:     @tron-cyan;
 }
 
-/* Prompt, entry, case indicator */
-prompt, entry, case-indicator {
-  text-color: @tron-fg;
+/* Prompt */
+prompt {
+  margin: 0px 10px 0px 4px;
+  text-color: @tron-cyan;
+  text: @tron-logo;
 }
 
-prompt {
-  margin: 0px 10px 0px 0px;
-  text-color: @tron-cyan; /* cyan prompt cue */
+/* Entry field */
+entry {
+  text-color:       @tron-fg;
+  placeholder:      "/ search...";
+  placeholder-color: rgba(147,164,195,0.45);
+  cursor:           text;
+}
+
+/* Case-sensitive indicator — red when active */
+case-indicator {
+  text-color: @tron-red;
+  spacing:    0;
 }
 
 /* The list of results */
 listview {
   padding: 8px;
   border-radius: 0px 0px 6px 6px;
-  border: 0px;
-  background-color: @semi;
+  border: 1px;
+  border-color: @tron-border-strong;
+  background-color: @panelB;
   dynamic: false;
   lines: 12;
 }
@@ -105,18 +126,54 @@ element {
   padding: 8px;
   vertical-align: 0.5;
   border-radius: 4px;
-  background-color: transparent;
+  background-color: @transparent;
   color: @tron-fg-dim;
   text-color: @tron-fg-dim;
   margin: 0px;
+  border: 1px 0px 0px 0px;
+  border-color: @tron-border-soft;
 }
 
-/* Selected row — Tron accent */
+/* Selected row — cyan left-bar + glow tint */
 element selected.normal {
-  background-color: @selection;
-  border: 0px 0px 0px 3px;
-  border-color: @tron-cyan;
-  text-color: @tron-fg;  /* full brightness on selection */
+  background-color: rgba(0,255,247,0.10);
+  border:           0px 0px 0px 3px;
+  border-color:     @tron-cyan;
+  text-color:       @tron-cyan;
+}
+
+/* Active (currently running) window rows */
+element active.normal {
+  text-color:       @tron-cyan;
+  background-color: rgba(0,255,247,0.05);
+}
+
+element selected.active {
+  background-color: rgba(0,255,247,0.18);
+  border:           0px 0px 0px 3px;
+  border-color:     @tron-cyan;
+  text-color:       @tron-cyan;
+}
+
+/* Urgent rows — red left-bar */
+element normal.urgent {
+  background-color: rgba(255,0,60,0.08);
+  border:           0px 0px 0px 3px;
+  border-color:     @tron-red;
+  text-color:       @tron-red;
+}
+
+element selected.urgent {
+  background-color: rgba(255,0,60,0.20);
+  border:           0px 0px 0px 3px;
+  border-color:     @tron-red;
+  text-color:       @tron-red;
+}
+
+/* Alternate striping — subtle scanline feel */
+element alternate.normal {
+  background-color: @tron-scanline;
+  border-color:     @transparent;
 }
 
 /* Text / icon */
@@ -127,8 +184,8 @@ element-text, element-icon {
 }
 
 element-icon {
-  size: 22px;
-  padding: 0px 8px 0px 0px;
+  size:    24px;
+  padding: 0px 10px 0px 0px;
 }
 
 /* Buttons (e.g., modi-switcher rows) */
@@ -136,10 +193,10 @@ button {
   padding: 8px;
   color: @tron-fg;
   horizontal-align: 0.5;
-  border: 2px 0px 2px 2px;
+  border: 1px;
   border-radius: 4px;
-  border-color: @tron-panel2;
-  background-color: @panelA;
+  border-color: @tron-cyan;
+  background-color: @panelB;
 }
 
 button selected.normal {
@@ -153,11 +210,22 @@ textbox {
   border-radius: @radius;
   border-color: @tron-cyan;
   border: 1px;
-  background-color: @panelA;
+  background-color: @panelB;
   text-color: @tron-fg;
 }
 
-/* Optional: highlight matches inside rows (if enabled) */
+/* Highlight matched characters — bold cyan */
 element-text {
-  highlight: @tron-cyan;
+  highlight: bold #00fff7;
+}
+
+/* Scrollbar styling for long lists */
+scrollbar {
+  width:            6px;
+  handle-width:     6px;
+  padding:          4px 2px 4px 0px;
+  border:           0px;
+  handle-color:     @tron-cyan;
+  background-color: rgba(15,20,32,0.60);
+  border-color:     @tron-panel1;
 }

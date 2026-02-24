@@ -1,0 +1,153 @@
+  {
+  "layer": "top",
+  "position": "top",
+  "height": 34,
+  "spacing": 8,
+
+  "modules-left": [ "custom/f_logo", "hyprland/workspaces", "hyprland/window" ],
+  "modules-center": [ "mpris" ],
+  "modules-right": [
+    "custom/vpn-ip",
+    "network",
+    "pulseaudio",
+    "bluetooth",
+    "custom/notifications",
+    "battery",
+    "clock#time",
+    "tray",
+    "custom/exit"
+  ],
+
+  "mpris": {
+    "format": "{player_icon} {status_icon} {artist} - {title}",
+    "player-icons": {
+      "spotify": "",
+      "default": "🎵"
+    },
+    "status-icons": {
+      "Playing": "",
+      "Paused": "",
+      "Stopped": ""
+    },
+    "max-length": 40
+  },
+
+  "custom/f_logo": {
+    "format": "<span foreground='#00fff7'>F</span><span foreground='#ff003c'>!</span>",
+    "tooltip": "fr3akazo1d — Command Center\\nClick for detailed system info",
+    "interval": 86400,
+    "markup": true,
+    "on-click": "~/.config/waybar/scripts/system_info.sh"
+  },
+
+  "hyprland/window": {
+    "format": "{}",
+    "max-length": 60,
+    "empty-window-text": "Desktop"
+  },
+
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{name}",
+    "persistent-workspaces": { "*": 5 },
+    "sort-by-number": true
+  },
+
+  "window": {
+    "max-length": 80,
+    "separate-outputs": false,
+    "format": "{title}",
+    "rewrite": {
+      "(.*) — Mozilla Firefox": "  $1",
+      "(.*) — Ghostty": "  $1"
+    }
+  },
+
+  "bluetooth": {
+  "format": " {status}",
+  "format-disabled": " Off",
+  "format-off": " Off",
+  "format-no-controller": " No Controller",
+  "interval": 30,
+  "on-click": "blueman-manager"
+},
+  "custom/exit": {
+  "format": "",
+  "on-click": "rofi -show menu -modi 'menu:rofi-power-menu'",
+  "tooltip-format": "Left: Power menu Right: Lock screen"
+},
+
+  "network": {
+  "interval": 5,
+  "format-wifi": "  {essid}",
+  "format-ethernet": "󰈁 {ifname}",
+  "format-disconnected": "󰖪 Offline",
+  "format-linked": "󰈁 {ifname} (No IP)",
+  "tooltip-format-wifi": "{essid} ({signalStrength}%)\n {ipaddr}/{cidr}\n↓ {bandwidthDownBytes} ↑ {bandwidthUpBytes}",
+  "tooltip-format-ethernet": "{ifname}\n {ipaddr}/{cidr}\n↓ {bandwidthDownBytes} ↑ {bandwidthUpBytes}",
+  "tooltip-format-disconnected": "Disconnected",
+  "on-click": "nm-connection-editor"
+},
+
+  "pulseaudio": {
+    "format": "{icon}  {volume}%",
+    "format-bluetooth": "{volume}% {icon} {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": " {format_source}",
+    "format-source": "{volume}% ",
+    "format-source-muted": "",
+    "format-icons": {
+      "headphone": " ",
+      "hands-free": " ",
+      "headset": " ",
+      "phone": " ",
+      "portable": " ",
+      "car": " ",
+      "default": ["", "", ""]
+    },
+    "on-click": "pavucontrol"
+  },
+   
+
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-alt": "{time}",
+    "format-icons": ["", "", "", "", ""],
+    "interval": 5
+  },
+
+"clock#time": {
+  "interval": 1,
+  "format": "{:%H:%M  %d %b}",
+  "format-alt": "{:%A, %d %B %Y  %H:%M:%S}",
+  "tooltip-format": "<tt><small>{calendar}</small></tt>",
+  "calendar": {
+    "mode": "month",
+    "on-scroll": 1,
+    "format": {
+      "months": "<span color='#00fff7'><b>{}</b></span>",
+      "days": "<span color='#ffffff'><b>{}</b></span>",
+      "today": "<span color='#ff003c'><b><u>{}</u></b></span>"
+    }
+  }
+},
+"custom/vpn-ip": {
+  "exec": "~/.config/waybar/scripts/vpn_ip.sh",
+  "interval": 10,
+  "return-type": "text",
+  "tooltip": true
+},
+
+  "custom/notifications": {
+    "format": "󰂚",
+    "tooltip": "Click to open notifications",
+    "on-click": "swaync-client -t -sw"
+  },
+
+  "tray": {
+    "icon-size": 10,
+    "spacing": 2
+  }
+}
