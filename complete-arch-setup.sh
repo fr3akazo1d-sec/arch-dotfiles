@@ -44,7 +44,14 @@ step() { echo -e "\n${PURPLE}${GEAR}${NC} ${CYAN}$1${NC}"; }
 
 # Configuration
 DOTFILES_REPO="fr3akazo1d-sec/arch-dotfiles"
-DOTFILES_DIR="$HOME/.dotfiles"
+# If the script is run from inside the repo, use that path directly
+# so local changes are deployed without needing a GitHub push first.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -f "$SCRIPT_DIR/config/hypr/hyprland.conf" ]]; then
+    DOTFILES_DIR="$SCRIPT_DIR"
+else
+    DOTFILES_DIR="$HOME/.dotfiles"
+fi
 
 # Error tracking arrays
 FAILED_PACKAGES=()
@@ -430,7 +437,12 @@ install_aur_packages() {
 # Clone dotfiles repository
 clone_dotfiles() {
     step "Cloning dotfiles repository"
-    
+
+    if [[ "$DOTFILES_DIR" == "$SCRIPT_DIR" ]]; then
+        log "Running from local repo ($DOTFILES_DIR) — skipping clone"
+        return 0
+    fi
+
     if [[ -d "$DOTFILES_DIR" ]]; then
         warn "Dotfiles directory already exists, updating..."
         cd "$DOTFILES_DIR"
@@ -439,7 +451,7 @@ clone_dotfiles() {
         info "Cloning dotfiles repository..."
         git clone "https://github.com/$DOTFILES_REPO.git" "$DOTFILES_DIR"
     fi
-    
+
     log "Dotfiles repository ready"
 }
 
@@ -479,7 +491,7 @@ install_dotfiles() {
     cd "$DOTFILES_DIR"
     
     # Create necessary directories
-    mkdir -p ~/.config/{hypr,waybar,rofi,swaync,fish,wezterm}
+    mkdir -p ~/.config/{hypr,waybar,rofi,swaync,fish,wezterm,ghostty}
     
     # Copy configuration files
     info "Installing Hyprland configuration..."
@@ -499,6 +511,9 @@ install_dotfiles() {
     
     info "Installing Wezterm configuration..."
     cp -r config/wezterm/* ~/.config/wezterm/ 2>/dev/null || true
+
+    info "Installing Ghostty configuration..."
+    cp -r config/ghostty/* ~/.config/ghostty/ 2>/dev/null || true
     
     # Starship configuration (if exists)
     if [[ -f config/starship.toml ]]; then
@@ -513,6 +528,11 @@ install_dotfiles() {
     cp -r wallpapers/* ~/.config/wallpapers/ 2>/dev/null || true
     cp -r wallpapers/* ~/Pictures/Wallpapers/ 2>/dev/null || true
     
+    # Fix permissions on executable scripts
+    chmod +x ~/.config/waybar/scripts/*.sh 2>/dev/null || true
+    chmod +x ~/.config/hypr/hyprlock/status.sh 2>/dev/null || true
+    chmod +x ~/.config/hypr/scripts/*.sh 2>/dev/null || true
+
     # Copy scripts
     info "Installing scripts..."
     mkdir -p ~/.local/bin

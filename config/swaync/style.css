@@ -27,6 +27,13 @@
   box-shadow: 0px 0px 15px rgba(0, 255, 247, 0.3);
   padding: 12px;
   margin: 5px;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.notification.low {
+  border-color: #162032;
+  box-shadow: none;
+  opacity: 0.85;
 }
 
 .notification:hover {
@@ -135,7 +142,44 @@
 .widget-mpris {
   background-color: #141d2b;
   color: #dce9ff;
-}/* Pomodoro Timer Buttons */
+}
+
+.widget-mpris-player {
+  padding: 8px;
+}
+
+.widget-mpris-album-art {
+  border-radius: 6px;
+  border: 1px solid rgba(0, 255, 247, 0.25);
+}
+
+.widget-mpris-title {
+  color: #00fff7;
+  font-weight: bold;
+  font-size: 11pt;
+}
+
+.widget-mpris-subtitle {
+  color: #93a4c3;
+  font-size: 9pt;
+}
+
+.widget-mpris button {
+  background-color: rgba(0, 255, 247, 0.08);
+  border: 1px solid rgba(0, 255, 247, 0.3);
+  border-radius: 6px;
+  color: #00fff7;
+  padding: 6px 10px;
+  margin: 2px;
+  transition: all 0.15s ease;
+}
+
+.widget-mpris button:hover {
+  background-color: rgba(0, 255, 247, 0.2);
+  box-shadow: 0 0 8px rgba(0, 255, 247, 0.4);
+}
+
+/* Pomodoro Timer Buttons */
 .buttons-grid {
   padding: 10px;
   margin: 5px 0;

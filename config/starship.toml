@@ -1,11 +1,7 @@
-# Starship configuration for Fr3akazo1d-sec
-# Cybersecurity-focused prompt with red team aesthetics
+# Starship configuration — fr3akazo1d
+# Red-team aesthetics: neon cyan + red, two-line prompt
 
 format = """
-[╭─](bold red)\
-$os\
-$username\
-$hostname\
 $directory\
 $git_branch\
 $git_status\
@@ -13,127 +9,164 @@ $python\
 $nodejs\
 $rust\
 $docker_context\
+$sudo\
 $cmd_duration\
+$status\
 $line_break\
-[╰─](bold red)$character"""
+$character"""
 
-# Disable the blank line at the start of the prompt
-add_newline = false
+right_format = """$memory_usage$time"""
 
-# OS symbol
+# Blank line between commands for readability
+add_newline = true
+
+# ── OS ──────────────────────────────────────────────────────────
 [os]
-style = "bold red"
-disabled = false
+style    = "bold red"
+disabled = true
 
 [os.symbols]
-Arch = " 󰣇"
+Arch  = "󰣇 "
 Linux = " "
 
-# Username
+# ── Username ─────────────────────────────────────────────────────
 [username]
-style_user = "bold cyan"
-style_root = "bold red"
-format = "[$user]($style)"
-disabled = false
-show_always = true
+style_user  = "bold cyan"
+style_root  = "blink bold red"
+format      = "[$user]($style)"
+disabled    = true
+show_always = false
 
-# Hostname
+# ── Hostname ─────────────────────────────────────────────────────
 [hostname]
-ssh_only = false
-format = "[@$hostname](bold green)"
-disabled = false
+ssh_only = true
+format   = "[@$hostname](bold red)"
+disabled = true
 
-# Directory
+# ── Directory ────────────────────────────────────────────────────
 [directory]
-style = "bold blue"
-format = "[ $path]($style)"
-truncation_length = 3
+style             = "bold cyan"
+format            = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
 truncation_symbol = "…/"
+read_only         = " 󰌾"
+read_only_style   = "bold red"
 
 [directory.substitutions]
-"Documents" = " 󰈙"
-"Downloads" = " "
-"Music" = " 󰝚"
-"Pictures" = " "
-"opt/Cyber-Sec" = " 󰒃"
+"Documents"    = "󰈙 "
+"Downloads"    = " "
+"Music"        = "󰝚 "
+"Pictures"     = " "
+"opt/Cyber-Sec" = "󰒃 "
+"home"         = " "
 
-# Git branch
+# ── Git ──────────────────────────────────────────────────────────
 [git_branch]
 symbol = " "
-format = "[ $symbol$branch]($style)"
-style = "bold purple"
+format = "[ $symbol$branch(:$remote_branch)]($style)"
+style  = "bold purple"
 
-# Git status
 [git_status]
-format = "[$all_status$ahead_behind]($style)"
-style = "bold yellow"
-conflicted = "⚠️"
-ahead = "⇡"
-behind = "⇣"
-diverged = "⇕"
-up_to_date = "✓"
-untracked = "?"
-stashed = "📦"
-modified = "!"
-staged = "+"
-renamed = "󰁕"
-deleted = "✘"
+format     = "([$all_status$ahead_behind]($style) )"
+style      = "bold yellow"
+conflicted = " "
+ahead      = "⇡${count}"
+behind     = "⇣${count}"
+diverged   = "⇕⇡${ahead_count}⇣${behind_count}"
+up_to_date = ""
+untracked  = "?${count}"
+stashed    = " "
+modified   = "!${count}"
+staged     = "+${count}"
+renamed    = "»${count}"
+deleted    = "✘${count}"
 
-# Command duration
-[cmd_duration]
-min_time = 2_000
-format = "[ $duration](bold yellow)"
-
-# Character
-[character]
-success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)"
-
-# Programming languages
+# ── Languages ────────────────────────────────────────────────────
 [python]
 symbol = " "
 format = "[ ${symbol}${pyenv_prefix}(${version})(\\($virtualenv\\))]($style)"
-style = "yellow"
+style  = "bold yellow"
 
 [nodejs]
 symbol = " "
 format = "[ $symbol($version)]($style)"
-style = "green"
+style  = "bold green"
 
 [rust]
 symbol = " "
 format = "[ $symbol($version)]($style)"
-style = "red"
+style  = "bold red"
 
-# Docker
+# ── Docker ───────────────────────────────────────────────────────
 [docker_context]
 symbol = " "
 format = "[ $symbol$context]($style)"
-style = "blue"
+style  = "bold blue"
 
-# Memory usage
+# ── Sudo (cached credentials indicator) ──────────────────────────
+[sudo]
+symbol   = "󰔡 "
+style    = "bold red"
+format   = "[ $symbol]($style)"
+disabled = false
+
+# ── Command duration ─────────────────────────────────────────────
+[cmd_duration]
+min_time = 2_000
+format   = "[ $duration](bold yellow)"
+
+# ── Exit status ──────────────────────────────────────────────────
+[status]
+symbol          = " "
+not_found_symbol = "󰍉 "
+sigint_symbol   = " "
+style           = "bold red"
+format          = "[ $symbol$status]($style)"
+disabled        = false
+map_symbol      = true
+
+# ── Character ────────────────────────────────────────────────────
+[character]
+success_symbol = "[❯](bold cyan)"
+error_symbol   = "[❯](bold red)"
+vimcmd_symbol  = "[❮](bold green)"
+
+# ── Fill (disabled)
+[fill]
+symbol   = "─"
+style    = "bold red"
+disabled = true
+
+# ── Right side: memory + time ────────────────────────────────
 [memory_usage]
-disabled = false
-threshold = 70
-format = "[ ${ram}( | ${swap})]($style)"
-style = "bold dimmed red"
+disabled  = false
+threshold = 60
+format    = "[$symbol${ram}]($style)"
+symbol    = "󰃛 "
+style     = "bold dimmed red"
 
-# Time
 [time]
-disabled = false
-format = "[ $time]($style)"
-style = "bold white"
+disabled    = false
+format      = "[ $time ]($style)"
+style       = "bold dimmed cyan"
 time_format = "%H:%M:%S"
 
-# Custom cybersec modules
+# ── Custom: VPN status (disabled — enable by adding $custom.vpn to format)
 [custom.vpn]
-command = "if ip addr show tun0 >/dev/null 2>&1 || ip addr show wg0 >/dev/null 2>&1; then echo '🔴 VPN'; fi"
-when = true
-format = "[ $output]($style)"
-style = "bold green"
+description = "Active VPN interfaces (tun*, wg*, wt*)"
+command     = "ifaces=$(ip -o link show up 2>/dev/null | awk -F': ' '{print $2}' | grep -E '^(tun|wg|wt)[0-9]+') && echo \"󰖂 $(echo $ifaces | sed 's/tun[0-9]*/OPN/;s/wg[0-9]*/WG/;s/wt[0-9]*/NB/' | sort -u | tr '\n' '+' | sed 's/+$//')\" || exit 1"
+when        = "true"
+format      = "[ $output]($style)"
+style       = "bold green"
+disabled    = true
+shell       = ["bash", "--norc", "--noprofile", "-c"]
 
+# ── Custom: Tor (disabled — enable by adding $custom.tor to format)
 [custom.tor]
-command = "if systemctl is-active tor >/dev/null 2>&1; then echo '🧅 Tor'; fi"
-when = true
-format = "[ $output]($style)"
-style = "bold cyan"
+description = "Tor daemon running"
+command     = "echo '󰗹 Tor'"
+when        = "systemctl is-active --quiet tor"
+format      = "[ $output]($style)"
+style       = "bold cyan"
+disabled    = true
+shell       = ["bash", "--norc", "--noprofile", "-c"]
